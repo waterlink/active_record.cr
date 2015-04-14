@@ -107,11 +107,21 @@ class Person < ActiveRecord::Model
   field_level private
   # field_level protected
 
+  query_level private
+  # default is public, there is no point in protected here
+
   # ...
 end
 
+# Enforces you to maintain encapsulation, ie: not expose your data -
+# put behavior in the same place the data it needs
 person = Person.find(127)
 person.first_name   #=> Error: unable to call private method first_name
+
+# Enforces you to maintain DRYness to some extent, ie: not leak
+# knowledge about your database structure, but put it in active record
+# model and expose your own nit-picked methods
+Person.where({ :first_name => "John" })    #=> Error: unable to call private method where
 ```
 
 ## Development
