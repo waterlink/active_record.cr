@@ -13,7 +13,7 @@ Don't confuse with Ruby's activerecord: aim of this is to be true to OO techniqu
 - [x] Implement `NullAdapter` (in-memory, for specs)
 - [x] Implement `#create`, `.create` and `.read`
 - [x] Implement `.where`
-- [ ] Implement `query_level`
+- [x] Implement `query_level`
 - [ ] Implement `#update` and `#delete`
 - [ ] Default `table_name` implementation
 - [ ] Implement `mysql` adapter and set it to default
