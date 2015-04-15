@@ -104,10 +104,10 @@ If you care about OO techniques, code quality and handling complexity, please en
 class Person < ActiveRecord::Model
 
   # Default is public for ease of use
-  field_level private
-  # field_level protected
+  field_level :private
+  # field_level :protected
 
-  query_level private
+  query_level :private
   # default is public, there is no point in protected here
 
   # ...
