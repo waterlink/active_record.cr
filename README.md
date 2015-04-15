@@ -15,7 +15,11 @@ Don't confuse with Ruby's activerecord: aim of this is to be true to OO techniqu
 - [ ] Implement `.where`
 - [ ] Implement `query_level`
 - [ ] Implement `#update` and `#delete`
+- [ ] Default `table_name` implementation
+- [ ] Implement `mysql` adapter and set it to default
 - [ ] Populate this list further by making some simple app on top of it
+- [ ] Implement `sqlite` driver and adapter
+- [ ] Implement `postgres` driver and adapter and set it to default
 
 ## Installation
 
