@@ -1,21 +1,25 @@
-class NullAdapter < ActiveRecord::Adapter
-  getter last_id
-  getter records
+require "./active_record"
 
-  def initialize(@table_name)
-    @last_id = 0
-    @records = [] of Hash(String, ActiveRecord::SupportedType)
+module ActiveRecord
+  class NullAdapter < ActiveRecord::Adapter
+    getter last_id
+    getter records
+
+    def initialize(@table_name)
+      @last_id = 0
+      @records = [] of Hash(String, ActiveRecord::SupportedType)
+    end
+
+    def read(id)
+      records[(id as Int) - 1]
+    end
+
+    def create(fields)
+      @last_id += 1
+      records << fields
+      last_id
+    end
   end
 
-  def read(id)
-    records[(id as Int) - 1]
-  end
-
-  def create(fields)
-    @last_id += 1
-    records << fields
-    last_id
-  end
+  Registry.register_adapter("null", NullAdapter)
 end
-
-ActiveRecord::Registry.register_adapter("null", NullAdapter)
