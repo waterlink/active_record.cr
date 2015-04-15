@@ -6,6 +6,17 @@ Don't confuse with Ruby's activerecord: aim of this is to be true to OO techniqu
 
 **Work in progress**
 
+## TODO
+
+- [x] Implement model definition syntax
+- [x] Implement `field_level`
+- [x] Implement `NullAdapter` (in-memory, for specs)
+- [x] Implement `#create`, `.create` and `.read`
+- [ ] Implement `.where`
+- [ ] Implement `query_level`
+- [ ] Implement `#update` and `#delete`
+- [ ] Populate this list further by making some simple app on top of it
+
 ## Installation
 
 Add it to `Projectfile`
@@ -126,7 +137,15 @@ Person.where({ :first_name => "John" })    #=> Error: unable to call private met
 
 ## Development
 
-TODO: Write instructions for development
+After cloning the project:
+
+```
+cd active_record.cr
+crystal deps   # install dependencies
+crystal spec   # run specs
+```
+
+Just use normal TDD development style.
 
 ## Contributing
 
