@@ -34,10 +34,10 @@ class Person < ActiveRecord::Model
   # table_name people
 
   # Database fields
-  primary id                 : Int
-  field last_name            : String
-  field first_name           : String
-  field number_of_dependents : Int
+  primary id                 :: Int
+  field last_name            :: String
+  field first_name           :: String
+  field number_of_dependents :: Int
 
   # Domain logic
   def get_tax_exemption
