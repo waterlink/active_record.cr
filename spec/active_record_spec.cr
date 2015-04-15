@@ -206,5 +206,24 @@ module ActiveRecord
       end
     end
 
+    describe "#update" do
+      it "does not change in data store when haven't been called yet" do
+        person = new_person.create
+        person.number_of_dependents = 4
+        Person.read(person.id).should_not eq(person)
+      end
+
+      it "updates record in store" do
+        person = new_person.create
+        person_a = Person.read(person.id)
+        person.number_of_dependents = 4
+        person.update
+
+        Person.read(person.id).should eq(person)
+        person.should_not eq(person_a)
+        Person.read(person.id).should_not eq(person_a)
+      end
+    end
+
   end
 end

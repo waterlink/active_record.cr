@@ -41,13 +41,13 @@ module ActiveRecord
       self.class.adapters << self if register
     end
 
-    def read(id)
-      records[(id as Int) - 1]
+    def read(primary_key)
+      records[(primary_key as Int) - 1]
     end
 
-    def create(fields)
+    def create(fields, primary_field)
       @last_id += 1
-      records << fields
+      records << fields.dup.merge({ primary_field => last_id })
       last_id
     end
 
@@ -65,6 +65,10 @@ module ActiveRecord
       records.select do |record|
         self.class.registered_query(query).call(params, record)
       end
+    end
+
+    def update(primary_key, fields)
+      records[(primary_key as Int) - 1] = fields.dup
     end
 
     def _reset

@@ -9,19 +9,24 @@ module ActiveRecord
     end
 
     macro primary(field_declaration)
+      @@primary_field = {{field_declaration.var.stringify}}
       field {{field_declaration}}
+      _field primary_key, {{field_declaration}}
     end
 
     macro define_field_macro(level)
-      macro field(field_declaration)
-        {{level.id}} def \{{field_declaration.var}}=(value : \{{field_declaration.type}})
+      macro _field(name, field_declaration)
+        {{level.id}} def \{{name.id}}=(value : \{{field_declaration.type}})
           fields[\{{field_declaration.var.stringify}}] = value
         end
 
-        {{level.id}} def \{{field_declaration.var}}
+        {{level.id}} def \{{name.id}}
           fields.fetch(\{{field_declaration.var.stringify}}, \{{field_declaration.type}}::Null.new)
         end
+      end
 
+      macro field(field_declaration)
+        _field(\{{field_declaration.var}}, \{{field_declaration}})
         register_field(\{{field_declaration.var.stringify}})
       end
     end
@@ -40,8 +45,8 @@ module ActiveRecord
       @@fields ||= [] of String
     end
 
-    def self.read(id)
-      new(adapter.read(id))
+    protected def self.primary_field
+      @@primary_field
     end
 
     protected def self.adapter
@@ -70,8 +75,14 @@ module ActiveRecord
       self.fields == other.fields
     end
 
+    def self.read(primary_key)
+      new(adapter.read(primary_key))
+    end
+
     def create
-      fields["id"] = self.class.adapter.create(fields)
+      fields[self.class.primary_field] = self.class.adapter.create(
+        fields, self.class.primary_field
+      )
       self
     end
 
@@ -94,6 +105,11 @@ module ActiveRecord
     end
 
     query_level ""
+
+    def update
+      self.class.adapter.update(primary_key, fields)
+      self
+    end
 
     protected def fields
       @fields ||= {} of String => SupportedType
