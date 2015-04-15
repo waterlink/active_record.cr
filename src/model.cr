@@ -83,6 +83,14 @@ module ActiveRecord
       new.create
     end
 
+    def self.where(query_hash)
+      adapter.where(query_hash).map { |fields| new(fields) }
+    end
+
+    def self.where(query, params)
+      adapter.where(query, params).map { |fields| new(fields) }
+    end
+
     protected def fields
       @fields ||= {} of String => SupportedType
     end

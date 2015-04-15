@@ -1,5 +1,31 @@
 require "./spec_helper"
 
+module ActiveRecord
+  class MoreDependents < NullAdapter::Query
+    def call(params, fields)
+      return false unless fields.has_key?("number_of_dependents") &&
+        params.has_key?("number_of_dependents")
+      actual = fields["number_of_dependents"] as Int
+      expected = params["number_of_dependents"] as Int
+      actual > expected
+    end
+  end
+
+  NullAdapter.register_query("number_of_dependents > :number_of_dependents", MoreDependents.new)
+
+  class LessDependents < NullAdapter::Query
+    def call(params, fields)
+      return false unless fields.has_key?("number_of_dependents") &&
+        params.has_key?("number_of_dependents")
+      actual = fields["number_of_dependents"] as Int
+      expected = params["number_of_dependents"] as Int
+      actual < expected
+    end
+  end
+
+  NullAdapter.register_query("number_of_dependents < :number_of_dependents", LessDependents.new)
+end
+
 class Example; end
 
 class Person < ActiveRecord::Model
@@ -137,6 +163,46 @@ module ActiveRecord
         Person.read(other_person.id).should eq(other_person)
         Person.read(person.id).should_not eq(other_person)
         Person.read(other_person.id).should_not eq(person)
+      end
+    end
+
+    describe ".where(query_hash)" do
+      it "finds multiple records" do
+        p1 = new_person.create
+        p2 = new_other_person.create
+        p3 = new_other_person.create
+        p4 = new_person.create
+        p5 = new_person.create
+        p6 = new_person.create
+        p7 = new_other_person.create
+
+        Person.where({ "number_of_dependents" => 0 }).should eq([] of Person)
+        Person.where({ "first_name" => "john" }).should eq([p1, p4, p5, p6])
+        Person.where({ "number_of_dependents" => 1 }).should eq([p2, p3, p7])
+        Person.where({ "first_name" => "john",
+                       "number_of_dependents" => 1 }).should eq([] of Person)
+        Person.where({ "first_name" => "john",
+                       "number_of_dependents" => 3 }).should eq([p1, p4, p5, p6])
+        Person.where({ "number_of_dependents" => 3 }).should eq([p1, p4, p5, p6])
+      end
+    end
+
+    describe ".where(query, params)" do
+      it "finds multiple records by raw parametrized query" do
+        p1 = new_person.create
+        p2 = new_other_person.create
+        p3 = new_other_person.create
+        p4 = new_person.create
+        p5 = new_person.create
+        p6 = new_person.create
+        p7 = new_other_person.create
+        p8 = Person.create({ "last_name" => "maria", "number_of_dependents" => 2 })
+
+        Person.where("number_of_dependents > :number_of_dependents",
+                     { "number_of_dependents" => 1 }).should eq([p1, p4, p5, p6, p8])
+
+        Person.where("number_of_dependents < :number_of_dependents",
+                     { "number_of_dependents" => 3 }).should eq([p2, p3, p7, p8])
       end
     end
 

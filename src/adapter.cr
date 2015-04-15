@@ -1,3 +1,5 @@
+require "./types"
+
 module ActiveRecord
   abstract class Adapter
     abstract def create(fields)

@@ -1,4 +1,8 @@
 struct Int
+  def self.null_class
+    Null
+  end
+
   struct Null < Int
     include Comparable(Int)
 
@@ -26,9 +30,19 @@ struct Int
       0 <=> other
     end
   end
+
+  include Comparable(Null)
+
+  def <=>(other : Null)
+    self <=> 0
+  end
 end
 
 class String
+  def self.null_class
+    Null
+  end
+
   class Null < String
     def inspect
       "Null(String)"
