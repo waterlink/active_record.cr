@@ -128,7 +128,7 @@ module ActiveRecord
       end
     end
 
-    describe "#read" do
+    describe ".read" do
       it "finds record properly" do
         person = new_person.create
         other_person = new_other_person.create
