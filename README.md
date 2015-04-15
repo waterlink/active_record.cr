@@ -12,7 +12,7 @@ Don't confuse with Ruby's activerecord: aim of this is to be true to OO techniqu
 - [x] Implement `field_level`
 - [x] Implement `NullAdapter` (in-memory, for specs)
 - [x] Implement `#create`, `.create` and `.read`
-- [ ] Implement `.where`
+- [x] Implement `.where`
 - [ ] Implement `query_level`
 - [ ] Implement `#update` and `#delete`
 - [ ] Default `table_name` implementation
