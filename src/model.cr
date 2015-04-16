@@ -1,5 +1,15 @@
 module ActiveRecord
   class Model
+    macro null_object(name_and_super, &block)
+      class {{name_and_super.receiver}} < {{name_and_super.args[0]}}
+        {{block.body}}
+      end
+
+      def self.null_value
+        {{name_and_super.receiver}}.new
+      end
+    end
+
     macro adapter(value)
       @@adapter_name = {{value.stringify}}
     end
@@ -70,13 +80,21 @@ module ActiveRecord
     def initialize
     end
 
+    def self.build(null : Nil)
+      null_value
+    end
+
+    def self.build(hash : Hash(K, V))
+      new(hash)
+    end
+
     def ==(other)
       return false unless other.is_a?(Model)
       self.fields == other.fields
     end
 
     def self.read(primary_key)
-      new(adapter.read(primary_key))
+      build(adapter.read(primary_key))
     end
 
     def create
@@ -111,8 +129,19 @@ module ActiveRecord
       self
     end
 
+    def delete
+      self.class.adapter.delete(primary_key)
+    end
+
     protected def fields
       @fields ||= {} of String => SupportedType
+    end
+
+    def self.null_value
+      Null.new
+    end
+
+    class Null < Model
     end
   end
 end

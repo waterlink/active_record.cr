@@ -8,6 +8,7 @@ module ActiveRecord
 
     getter last_id
     getter records
+    getter deleted
 
     def self.reset
       adapters.each do |adapter|
@@ -38,10 +39,12 @@ module ActiveRecord
     def initialize(@table_name, register = true)
       @last_id = 0
       @records = [] of Hash(String, ActiveRecord::SupportedType)
+      @deleted = [] of Int
       self.class.adapters << self if register
     end
 
     def read(primary_key)
+      return nil if deleted.includes?((primary_key as Int) - 1)
       records[(primary_key as Int) - 1]
     end
 
@@ -52,23 +55,46 @@ module ActiveRecord
     end
 
     def where(query_hash)
-      records.select do |record|
-        matches = true
+      result = [] of Fields
+
+      records.each_index do |index|
+        record = records[index]
+        matches = !deleted.includes?(index)
+
         query_hash.each do |field, value|
           matches &&= record.fetch(field, value.class.null_class.new) == value
         end
-        matches
+
+        if matches
+          result << record
+        end
       end
+
+      result
     end
 
     def where(query, params)
-      records.select do |record|
-        self.class.registered_query(query).call(params, record)
+      result = [] of Fields
+
+      records.each_index do |index|
+        record = records[index]
+        matches = !deleted.includes?(index) &&
+          self.class.registered_query(query).call(params, record)
+
+        if matches
+          result << record
+        end
       end
+
+      result
     end
 
     def update(primary_key, fields)
       records[(primary_key as Int) - 1] = fields.dup
+    end
+
+    def delete(primary_key)
+      deleted << (primary_key as Int) - 1
     end
 
     def _reset

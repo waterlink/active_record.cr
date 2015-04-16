@@ -43,6 +43,12 @@ class Person < ActiveRecord::Model
     0.17
   end
 
+  null_object Null < Person do
+    def to_s
+      "No person"
+    end
+  end
+
 end
 
 class AnotherModel < ActiveRecord::Model
@@ -222,6 +228,16 @@ module ActiveRecord
         Person.read(person.id).should eq(person)
         person.should_not eq(person_a)
         Person.read(person.id).should_not eq(person_a)
+      end
+    end
+
+    describe "#delete" do
+      it "removes from it from data store" do
+        person = new_person.create
+        person.delete
+        Person.read(person.id).should_not eq(person)
+        Person.read(person.id).should be_a(Person::Null)
+        Person.read(person.id).to_s.should eq("No person")
       end
     end
 

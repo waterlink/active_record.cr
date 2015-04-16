@@ -1,6 +1,8 @@
 require "./types"
 
 module ActiveRecord
+  alias Fields = Hash(String, SupportedType)
+
   abstract class Adapter
     abstract def create(fields)
     abstract def read(id)
