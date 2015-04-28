@@ -92,9 +92,9 @@ Person.read(127)  #=> #<Person: @id=127, ...>
 # Query by hash
 Person.where({ "number_of_dependents" => 0 })   #=> [#<Person: ...>, #<Person: ...>, ...]
 
-# Or use parametrized SQL (if you use SQL adapter of course)
-Person.where("number_of_dependents > :min_dependents",
-             { "min_dependents" => 3 })    #=> [#<Person: ...>, #<Person: ...>, ...]
+# Or construct a query object
+include ActiveRecord::CriteriaHelper
+Person.where(criteria("number_of_dependents") > 3)    #=> [#<Person: ...>, #<Person: ...>, ...]
 ```
 
 ### Update existing record
