@@ -30,7 +30,7 @@ module ActiveRecord
         criteria("a_field").same_query?(nil).should be_false
         criteria("a_field").same_query?(Object).should be_false
         criteria("a_field").same_query?(Query.new(nil)).should be_false
-        criteria("a_field").same_query?({} of String => Int).should be_false
+        criteria("a_field").same_query?({} of String => Int32).should be_false
       end
     end
   end

@@ -39,13 +39,13 @@ module ActiveRecord
     def initialize(@table_name, register = true)
       @last_id = 0
       @records = [] of Hash(String, ActiveRecord::SupportedType)
-      @deleted = [] of Int
+      @deleted = [] of Int32
       self.class.adapters << self if register
     end
 
     def read(primary_key)
-      return nil if deleted.includes?((primary_key as Int) - 1)
-      records[(primary_key as Int) - 1]
+      return nil if deleted.includes?((primary_key as Int32) - 1)
+      records[(primary_key as Int32) - 1]
     end
 
     def create(fields, primary_field)
@@ -90,11 +90,11 @@ module ActiveRecord
     end
 
     def update(primary_key, fields)
-      records[(primary_key as Int) - 1] = fields.dup
+      records[(primary_key as Int32) - 1] = fields.dup
     end
 
     def delete(primary_key)
-      deleted << (primary_key as Int) - 1
+      deleted << (primary_key as Int32) - 1
     end
 
     def _reset
