@@ -145,7 +145,7 @@ module ActiveRecord
         AnotherModel.read(example.id).should eq(example)
       end
 
-      it "can be used trhough .create" do
+      it "can be used through .create" do
         person = Person.create({ "last_name" => "john" })
         person.id.should_not be_a(Int::Null)
         person.should_not eq(Person.new({ "last_name" => "john" }))
@@ -232,7 +232,7 @@ module ActiveRecord
     end
 
     describe "#delete" do
-      it "removes from it from data store" do
+      it "removes it from data store" do
         person = new_person.create
         person.delete
         Person.read(person.id).should_not eq(person)
