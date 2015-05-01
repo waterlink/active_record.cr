@@ -1,10 +1,13 @@
 require "./active_record"
+require "./sql/query_generator"
 
 module ActiveRecord
   class NullAdapter < ActiveRecord::Adapter
     abstract class Query
       abstract def call(params, fields)
     end
+
+    query_generator Sql::QueryGenerator.new
 
     getter last_id
     getter records

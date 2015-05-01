@@ -41,3 +41,7 @@ def be_same_query(expected)
 end
 
 include ActiveRecord::CriteriaHelper
+
+def example(description, file = __FILE__, line = __LINE__, &block)
+  it(description, file, line, &block)
+end
