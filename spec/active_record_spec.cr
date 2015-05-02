@@ -4,26 +4,40 @@ module ActiveRecord
   class MoreDependents < NullAdapter::Query
     def call(params, fields)
       return false unless fields.has_key?("number_of_dependents") &&
-        params.has_key?("number_of_dependents")
+        params.has_key?("1")
       actual = fields["number_of_dependents"] as Int
-      expected = params["number_of_dependents"] as Int
+      expected = params["1"] as Int
       actual > expected
     end
   end
 
-  NullAdapter.register_query("number_of_dependents > :number_of_dependents", MoreDependents.new)
+  NullAdapter.register_query("number_of_dependents > :1", MoreDependents.new)
 
   class LessDependents < NullAdapter::Query
     def call(params, fields)
       return false unless fields.has_key?("number_of_dependents") &&
-        params.has_key?("number_of_dependents")
+        params.has_key?("1")
       actual = fields["number_of_dependents"] as Int
-      expected = params["number_of_dependents"] as Int
+      expected = params["1"] as Int
       actual < expected
     end
   end
 
-  NullAdapter.register_query("number_of_dependents < :number_of_dependents", LessDependents.new)
+  NullAdapter.register_query("number_of_dependents < :1", LessDependents.new)
+
+  class LessAndMoreDependents < NullAdapter::Query
+    def call(params, fields)
+      return false unless fields.has_key?("number_of_dependents") &&
+        params.has_key?("1") && params.has_key?("2")
+      actual = fields["number_of_dependents"] as Int
+      low = params["1"] as Int
+      high = params["2"] as Int
+      actual > low && actual < high
+    end
+  end
+
+  NullAdapter.register_query("(number_of_dependents > :1) AND (number_of_dependents < :2)",
+                             LessAndMoreDependents.new)
 end
 
 class Example; end
@@ -193,7 +207,7 @@ module ActiveRecord
       end
     end
 
-    describe ".where(query, params)" do
+    describe ".where(Query)" do
       it "finds multiple records by raw parametrized query" do
         p1 = new_person.create
         p2 = new_other_person.create
@@ -204,11 +218,12 @@ module ActiveRecord
         p7 = new_other_person.create
         p8 = Person.create({ "last_name" => "maria", "number_of_dependents" => 2 })
 
-        Person.where("number_of_dependents > :number_of_dependents",
-                     { "number_of_dependents" => 1 }).should eq([p1, p4, p5, p6, p8])
+        Person.where(criteria("number_of_dependents") > 1).should eq([p1, p4, p5, p6, p8])
 
-        Person.where("number_of_dependents < :number_of_dependents",
-                     { "number_of_dependents" => 3 }).should eq([p2, p3, p7, p8])
+        Person.where(criteria("number_of_dependents") < 3).should eq([p2, p3, p7, p8])
+
+        Person.where((criteria("number_of_dependents") > 1).and(criteria("number_of_dependents") < 3))
+          .should eq([p8])
       end
     end
 

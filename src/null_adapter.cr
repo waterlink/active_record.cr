@@ -57,6 +57,11 @@ module ActiveRecord
       last_id
     end
 
+    def where(query : ActiveRecord::Query)
+      query = self.class.generate_query(query).not_nil!
+      _where(query.query, query.params)
+    end
+
     def where(query_hash)
       result = [] of Fields
 
@@ -76,7 +81,7 @@ module ActiveRecord
       result
     end
 
-    def where(query, params)
+    def _where(query, params)
       result = [] of Fields
 
       records.each_index do |index|
