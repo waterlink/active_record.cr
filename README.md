@@ -15,9 +15,11 @@ Don't confuse with Ruby's activerecord: aim of this is to be true to OO techniqu
 - [x] Implement `.where`
 - [x] Implement `query_level`
 - [x] Implement `#update` and `#delete`
+- [x] Implement better query DSL
 - [ ] Default `table_name` implementation
 - [ ] Implement `mysql` adapter and set it to default
 - [ ] Populate this list further by making some simple app on top of it
+- [ ] Support more types (currently only Int|String are supported)
 - [ ] Implement `sqlite` driver and adapter
 - [ ] Implement `postgres` driver and adapter and set it to default
 
@@ -97,6 +99,8 @@ include ActiveRecord::CriteriaHelper
 Person.where(criteria("number_of_dependents") > 3)    #=> [#<Person: ...>, #<Person: ...>, ...]
 ```
 
+See [Query DSL](#query-dsl)
+
 ### Update existing record
 
 ```crystal
@@ -138,6 +142,28 @@ person.first_name   #=> Error: unable to call private method first_name
 # model and expose your own nit-picked methods
 Person.where({ :first_name => "John" })    #=> Error: unable to call private method where
 ```
+
+### Query DSL
+
+Examples (comment is in format `[sql_query, params]`):
+
+```crystal
+criteria("person_id") == 3                            # [person_id = :1, { "1" => 3 }]
+criteria("person_id") == criteria("other_person_id")  # [person_id = other_person_id, {}]
+
+criteria("number") <= 3                               # [number < :1, { "1" => 3 }]
+
+(!(criteria("number") <= 3))                          # [(NOT (number <= :1)) AND (number <> :2),
+  .and(criteria("number") != 5)                       #  { "1" => 3, "2" => 5 }]
+
+criteria("subject_id").is_not_null                    # [(subject_id) IS NOT NULL, {}]
+```
+
+Supported comparison operators: `== != > >= < <=`
+
+Supported logic operators: `or | and & xor ^ not !`
+
+Supported is operators: `is_true is_not_true is_false is_not_false is_unknown is_not_unknown is_null is_not_null`
 
 ## Development
 
