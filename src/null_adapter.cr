@@ -57,6 +57,10 @@ module ActiveRecord
       last_id
     end
 
+    def index
+      records
+    end
+
     def where(query : ActiveRecord::Query)
       query = self.class.generate_query(query).not_nil!
       _where(query.query, query.params)

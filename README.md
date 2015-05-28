@@ -92,6 +92,9 @@ Person.read(127)  #=> #<Person: @id=127, ...>
 ### Query multiple records
 
 ```crystal
+# Get all records
+Person.index         # => [#<Person: ...>, #<Person: ...>, ...]
+
 # Query by hash
 Person.where({ "number_of_dependents" => 0 })   #=> [#<Person: ...>, #<Person: ...>, ...]
 

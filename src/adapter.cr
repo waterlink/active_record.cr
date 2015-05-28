@@ -21,6 +21,7 @@ module ActiveRecord
 
     abstract def create(fields)
     abstract def read(id)
+    abstract def index
     abstract def where(query_hash)
     abstract def where(query, params)
     abstract def update(id, fields)

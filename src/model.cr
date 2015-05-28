@@ -120,6 +120,10 @@ module ActiveRecord
       {{level.id}} def self.where(query, params)
         adapter.where(query, params).map { |fields| new(fields) }
       end
+
+      {{level.id}} def self.index
+        adapter.index.map { |fields| new(fields) }
+      end
     end
 
     query_level ""

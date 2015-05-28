@@ -186,6 +186,16 @@ module ActiveRecord
       end
     end
 
+    describe ".index" do
+      it "finds all records" do
+        p1 = new_person.create
+        p2 = new_other_person.create
+        p3 = new_other_person.create
+
+        Person.index.should eq([p1, p2, p3])
+      end
+    end
+
     describe ".where(query_hash)" do
       it "finds multiple records" do
         p1 = new_person.create
