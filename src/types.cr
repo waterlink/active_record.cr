@@ -51,6 +51,6 @@ class String
 end
 
 module ActiveRecord
-  alias SupportedTypeWithoutString = Int8|UInt8|Int16|UInt16|Int32|UInt32|Int64|UInt64
+  alias SupportedTypeWithoutString = Int8|UInt8|Int16|UInt16|Int32|UInt32|Int64|UInt64|Int::Null
   alias SupportedType = String|SupportedTypeWithoutString
 end

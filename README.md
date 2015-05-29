@@ -149,6 +149,10 @@ Person.where({ :first_name => "John" })    #=> Error: unable to call private met
 
 ### Query DSL
 
+Generally to use `#criteria` DSL method, you need to `include
+ActiveRecord::CriteriaHelper`, but inside of your model code you
+don't need to do that.
+
 Examples (comment is in format `[sql_query, params]`):
 
 ```crystal

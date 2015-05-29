@@ -1,5 +1,10 @@
+require "./criteria_helper"
+
 module ActiveRecord
   class Model
+    include CriteriaHelper
+    extend CriteriaHelper
+
     macro null_object(name_and_super, &block)
       class {{name_and_super.receiver}} < {{name_and_super.args[0]}}
         {{block.body}}
