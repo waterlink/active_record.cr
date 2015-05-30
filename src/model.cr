@@ -36,7 +36,7 @@ module ActiveRecord
         end
 
         {{level.id}} def \{{name.id}}
-          fields.fetch(\{{field_declaration.var.stringify}}, \{{field_declaration.type}}::Null.new)
+          fields.fetch(\{{field_declaration.var.stringify}}, \{{field_declaration.type}}::Null.new) as \{{field_declaration.type}}
         end
       end
 

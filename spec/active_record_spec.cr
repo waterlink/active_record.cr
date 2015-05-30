@@ -184,6 +184,11 @@ module ActiveRecord
         Person.read(person.id).should_not eq(other_person)
         Person.read(other_person.id).should_not eq(person)
       end
+
+      it "is of right class" do
+        person = new_person.create
+        Person.read(person.id).get_tax_exemption.should eq(0.17)
+      end
     end
 
     describe ".index" do
