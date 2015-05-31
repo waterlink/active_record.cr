@@ -99,7 +99,7 @@ module ActiveRecord
     end
 
     def self.read(primary_key)
-      build(adapter.read(primary_key))
+      build(adapter.read(primary_key)) as self
     end
 
     def create

@@ -75,6 +75,25 @@ class AnotherModel < ActiveRecord::Model
 
 end
 
+class Post < ActiveRecord::Model
+  adapter null
+  table_name posts
+
+  primary id      :: Int
+  field   title   :: String
+  field   content :: String
+
+  field_level :protected
+
+  def self.latest
+    index
+  end
+
+  def short_content
+    content[0..16] + "..."
+  end
+end
+
 def new_person
   Person.new({ "first_name"           => "john",
                "last_name"            => "smith",
@@ -189,6 +208,13 @@ module ActiveRecord
         person = new_person.create
         Person.read(person.id).get_tax_exemption.should eq(0.17)
       end
+
+      it "works correctly with encapsulated levels" do
+        post = Post.create({ "title" => "My first post",
+                             "content" => "Lots of content here" * 100 })
+
+        Post.read(post.id).short_content.should eq("Lots of content h...")
+      end
     end
 
     describe ".index" do
@@ -198,6 +224,13 @@ module ActiveRecord
         p3 = new_other_person.create
 
         Person.index.should eq([p1, p2, p3])
+      end
+
+      it "works correctly with custom methods" do
+        post = Post.create({ "title" => "My first post",
+                             "content" => "Lots of content here" * 100 })
+
+        Post.index.first.short_content.should eq("Lots of content h...")
       end
     end
 
