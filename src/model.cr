@@ -2,6 +2,64 @@ require "./criteria_helper"
 
 module ActiveRecord
   class Model
+
+    class Fields
+      class Int
+        getter fields
+
+        def initialize
+          @fields = {} of ::String => IntTypes
+        end
+
+        def set_field(name, value)
+          if value.is_a?(::Int)
+            fields[name] = value
+          end
+          value
+        end
+      end
+
+      class String
+        getter fields
+
+        def initialize
+          @fields = {} of ::String => ::String
+        end
+
+        def set_field(name, value)
+          if value.is_a?(::String)
+            fields[name] = value
+          end
+          value
+        end
+      end
+
+      private getter typed_fields
+
+      def initialize
+        @typed_fields = {
+          "Int" => Int.new,
+          "String" => String.new,
+        }
+      end
+
+      def [](its_type)
+        typed_fields[its_type]
+      end
+
+      def to_h
+        hash = {} of ::String => SupportedType
+
+        typed_fields.each do |its_type, typed_fields|
+          typed_fields.fields.each do |name, value|
+            hash[name] = value
+          end
+        end
+
+        hash
+      end
+    end
+
     include CriteriaHelper
     extend CriteriaHelper
 
@@ -32,17 +90,19 @@ module ActiveRecord
     macro define_field_macro(level)
       macro _field(name, field_declaration)
         {{level.id}} def \{{name.id}}=(value : \{{field_declaration.type}})
-          fields[\{{field_declaration.var.stringify}}] = value
+          typed_fields = fields[\{{field_declaration.type.stringify}}] as ::ActiveRecord::Model::Fields::\{{field_declaration.type.id}}
+          typed_fields.fields[\{{field_declaration.var.stringify}}] = value
         end
 
         {{level.id}} def \{{name.id}}
-          fields.fetch(\{{field_declaration.var.stringify}}, \{{field_declaration.type}}::Null.new) as \{{field_declaration.type}}
+          typed_fields = fields[\{{field_declaration.type.stringify}}] as ::ActiveRecord::Model::Fields::\{{field_declaration.type.id}}
+          typed_fields.fields.fetch(\{{field_declaration.var.stringify}}, \{{field_declaration.type}}::Null.new)
         end
       end
 
       macro field(field_declaration)
         _field(\{{field_declaration.var}}, \{{field_declaration}})
-        register_field(\{{field_declaration.var.stringify}})
+        register_field(\{{field_declaration.var.stringify}}, \{{field_declaration.type.stringify}})
       end
     end
 
@@ -52,12 +112,17 @@ module ActiveRecord
       define_field_macro({{level}})
     end
 
-    private def self.register_field(name)
+    private def self.register_field(name, its_type)
       fields << name
+      field_types[name] = its_type
     end
 
     def self.fields
       @@fields ||= [] of String
+    end
+
+    def self.field_types
+      @@field_types ||= {} of String => String
     end
 
     protected def self.primary_field
@@ -78,7 +143,7 @@ module ActiveRecord
 
     def initialize(hash)
       hash.each do |field, value|
-        fields[field] = value if self.class.fields.includes?(field)
+        set_field(field, value)
       end
     end
 
@@ -95,7 +160,7 @@ module ActiveRecord
 
     def ==(other)
       return false unless other.is_a?(Model)
-      self.fields == other.fields
+      self.fields.to_h == other.fields.to_h
     end
 
     def self.read(primary_key)
@@ -103,8 +168,11 @@ module ActiveRecord
     end
 
     def create
-      fields[self.class.primary_field] = self.class.adapter.create(
-        fields, self.class.primary_field
+      set_field(
+        self.class.primary_field,
+        self.class.adapter.create(
+          fields.to_h, self.class.primary_field
+        )
       )
       self
     end
@@ -134,7 +202,7 @@ module ActiveRecord
     query_level ""
 
     def update
-      self.class.adapter.update(primary_key, fields)
+      self.class.adapter.update(primary_key, fields.to_h)
       self
     end
 
@@ -143,7 +211,13 @@ module ActiveRecord
     end
 
     protected def fields
-      @fields ||= {} of String => SupportedType
+      @fields ||= Fields.new
+    end
+
+    private def set_field(field, value)
+      return unless self.class.fields.includes?(field)
+      fields[self.class.field_types[field]]
+        .set_field(field, value)
     end
 
     def self.null_value
