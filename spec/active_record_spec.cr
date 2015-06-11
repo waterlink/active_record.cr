@@ -94,6 +94,21 @@ class Post < ActiveRecord::Model
   end
 end
 
+class ExampleModel < ActiveRecord::Model
+  adapter fake
+
+  primary  id    :: Int
+  field    name  :: String
+end
+
+class AnotherExampleModel < ActiveRecord::Model
+  adapter fake
+  table_name some_models
+
+  primary  id    :: Int
+  field    name  :: String
+end
+
 def new_person
   Person.new({ "first_name"           => "john",
                "last_name"            => "smith",
@@ -303,5 +318,16 @@ module ActiveRecord
       end
     end
 
+    describe ".table_name" do
+      it "equals to provided value" do
+        AnotherExampleModel.create({ "name" => "hello world" })
+        FakeAdapter.instance.table_name.should eq("some_models")
+      end
+
+      it "equals to plural form by default" do
+        ExampleModel.create({ "name" => "hello world" })
+        FakeAdapter.instance.table_name.should eq("example_models")
+      end
+    end
   end
 end

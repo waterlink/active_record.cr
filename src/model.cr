@@ -1,4 +1,5 @@
 require "./criteria_helper"
+require "./support"
 
 module ActiveRecord
   class Model
@@ -130,7 +131,7 @@ module ActiveRecord
     end
 
     protected def self.adapter
-      @@adapter ||= Registry.adapter(adapter_name).new(table_name_value)
+      @@adapter ||= Registry.adapter(adapter_name).build(table_name_value)
     end
 
     private def self.adapter_name
@@ -138,7 +139,7 @@ module ActiveRecord
     end
 
     private def self.table_name_value
-      @@table_name
+      (@@table_name ||= Support.plural(name)).not_nil!
     end
 
     def initialize(hash)

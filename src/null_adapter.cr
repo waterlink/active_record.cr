@@ -39,6 +39,10 @@ module ActiveRecord
       @@registered_queries ||= {} of String => Query
     end
 
+    def self.build(table_name, register = true)
+      new(table_name, register)
+    end
+
     def initialize(@table_name, register = true)
       @last_id = 0
       @records = [] of Hash(String, ActiveRecord::SupportedType)

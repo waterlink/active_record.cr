@@ -1,5 +1,4 @@
 require "./spec_helper"
-require "mocks"
 require "../src/criteria"
 
 module ActiveRecord

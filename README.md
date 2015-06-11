@@ -16,7 +16,7 @@ Don't confuse with Ruby's activerecord: aim of this is to be true to OO techniqu
 - [x] Implement `query_level`
 - [x] Implement `#update` and `#delete`
 - [x] Implement better query DSL
-- [ ] Default `table_name` implementation
+- [x] Default `table_name` implementation
 - [ ] Implement `mysql` adapter and set it to default
 - [ ] Populate this list further by making some simple app on top of it
 - [ ] Describe in readme how to implement your own adapter
