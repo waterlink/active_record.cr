@@ -150,7 +150,6 @@ module ActiveRecord
 
       it "is not equal to non-person objects" do
         new_person.should_not eq(nil)
-        new_person.should_not eq(Object)
         new_person.should_not eq(55)
         new_person.should_not eq(Example.new)
       end
