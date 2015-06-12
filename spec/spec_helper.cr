@@ -5,22 +5,17 @@ require "../src/null_adapter"
 require "../src/criteria_helper"
 require "./fake_adapter"
 
-# Use this after next release of Crystal
-#Spec.before_each do
-#  ActiveRecord::NullAdapter.reset
-#end
-#
-#Spec.after_each do
-#  ActiveRecord::NullAdapter.reset
-#end
+def _specs_reset
+  ActiveRecord::NullAdapter.reset
+  FakeAdapter._reset
+end
 
-# Now use this:
-def it(description, file = __FILE__, line = __LINE__, &block)
-  ActiveRecord::NullAdapter.reset
-  FakeAdapter._reset
-  previous_def(description, file, line, &block)
-  ActiveRecord::NullAdapter.reset
-  FakeAdapter._reset
+Spec.before_each do
+  _specs_reset
+end
+
+Spec.after_each do
+  _specs_reset
 end
 
 class SameQueryExpectation(T)
