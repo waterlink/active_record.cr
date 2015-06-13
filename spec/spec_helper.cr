@@ -1,9 +1,11 @@
-require "spec"
-require "mocks"
-require "../src/active_record"
-require "../src/null_adapter"
-require "../src/criteria_helper"
-require "./fake_adapter"
+ifdef !active_record_adapter
+  require "spec"
+  require "mocks"
+  require "../src/active_record"
+  require "../src/null_adapter"
+  require "../src/criteria_helper"
+  require "./fake_adapter"
+end
 
 def _specs_reset
   ActiveRecord::NullAdapter.reset
