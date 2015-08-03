@@ -3,31 +3,15 @@ struct Int
     Null
   end
 
-  struct Null < Int
+  struct Null
     include Comparable(Int)
 
     def to_s(io)
       io << ""
     end
 
-    def to_i64
-      0
-    end
-
-    def inspect
-      "Null(Int)"
-    end
-
-    def +(other)
-      0 + other
-    end
-
-    def -(other)
-      0 - other
-    end
-
-    def <=>(other)
-      0 <=> other
+    macro method_missing(name, args, block)
+      0.{{name.id}}({{args.argify}}) {{block}}
     end
   end
 
@@ -43,16 +27,24 @@ class String
     Null
   end
 
-  class Null < String
+  class Null
+    def to_s(io)
+      io << ""
+    end
+
     def inspect
       "Null(String)"
+    end
+
+    macro method_missing(name, args, block)
+      "".{{name.id}}({{args.argify}}) {{block}}
     end
   end
 end
 
 module ActiveRecord
   alias IntTypes = Int8|UInt8|Int16|UInt16|Int32|UInt32|Int64|UInt64|Int::Null
-  alias StringTypes = String
+  alias StringTypes = String|String::Null
   alias SupportedTypeWithoutString = Int8|UInt8|Int16|UInt16|Int32|UInt32|Int64|UInt64|Int::Null
-  alias SupportedType = String|SupportedTypeWithoutString
+  alias SupportedType = StringTypes|SupportedTypeWithoutString
 end
