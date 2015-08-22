@@ -49,6 +49,10 @@ class String
     Null
   end
 
+  def ==(other : Null)
+    self == ""
+  end
+
   class Null
     def to_s(io)
       io << ""
@@ -56,6 +60,10 @@ class String
 
     def ==(other : self)
       true
+    end
+
+    def ==(other : String)
+      other == self
     end
 
     def inspect
