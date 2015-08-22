@@ -23,7 +23,7 @@ module ActiveRecord
     abstract def create(fields)
     abstract def find(id)
     abstract def index
-    abstract def where(query_hash)
+    abstract def where(query_hash : Hash)
     abstract def where(query : Query)
     abstract def update(id, fields)
     abstract def delete(id)
