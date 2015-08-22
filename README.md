@@ -1,4 +1,4 @@
-# active_record
+# active_record [![Build Status](https://travis-ci.org/waterlink/active_record.cr.svg?branch=master)](https://travis-ci.org/waterlink/active_record.cr)
 
 Active Record pattern implementation for Crystal.
 
