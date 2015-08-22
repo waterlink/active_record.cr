@@ -54,6 +54,10 @@ class String
       io << ""
     end
 
+    def ==(other : self)
+      true
+    end
+
     def inspect
       "Null(String)"
     end

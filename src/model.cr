@@ -64,6 +64,8 @@ module ActiveRecord
     include CriteriaHelper
     extend CriteriaHelper
 
+    MACRO_CURRENT = [] of String
+
     macro null_object(name_and_super, &block)
       class {{name_and_super.receiver}} < {{name_and_super.args[0]}}
         {{block.body}}
@@ -90,6 +92,8 @@ module ActiveRecord
 
     macro define_field_macro(level)
       macro _field(name, field_declaration)
+        \{% MACRO_FIELDS_{{MACRO_CURRENT.last.id}} << name %}
+
         {{level.id}} def \{{name.id}}=(value : \{{field_declaration.type}})
           typed_fields = fields[\{{field_declaration.type.stringify}}] as ::ActiveRecord::Model::Fields::\{{field_declaration.type.id}}
           typed_fields.fields[\{{field_declaration.var.stringify}}] = value
@@ -99,6 +103,14 @@ module ActiveRecord
           typed_fields = fields[\{{field_declaration.type.stringify}}] as ::ActiveRecord::Model::Fields::\{{field_declaration.type.id}}
           typed_fields.fields.fetch(\{{field_declaration.var.stringify}}, \{{field_declaration.type}}::Null.new)
         end
+
+        def _raw_fields
+          {
+            \{% for name in MACRO_FIELDS_{{MACRO_CURRENT.last.id}} %}
+              \{{name.stringify}} => \{{name.id}},
+            \{% end %}
+          } of ::String => ::ActiveRecord::SupportedType
+        end
       end
 
       macro field(field_declaration)
@@ -107,10 +119,14 @@ module ActiveRecord
       end
     end
 
-    define_field_macro ""
-
     macro field_level(level)
       define_field_macro({{level}})
+    end
+
+    macro name(current_model)
+      {% MACRO_CURRENT << current_model %}
+      MACRO_FIELDS_{{current_model.id}} = [] of String
+      define_field_macro ""
     end
 
     private def self.register_field(name, its_type)
@@ -161,7 +177,7 @@ module ActiveRecord
 
     def ==(other)
       return false unless other.is_a?(Model)
-      self.fields.to_h == other.fields.to_h
+      self._raw_fields == other._raw_fields
     end
 
     def self.find(primary_key)
