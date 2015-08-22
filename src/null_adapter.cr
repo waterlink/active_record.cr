@@ -9,9 +9,7 @@ module ActiveRecord
 
     query_generator Sql::QueryGenerator.new
 
-    getter last_id
-    getter records
-    getter deleted
+    getter last_id, records, deleted, primary_field, fields
 
     def self.reset
       adapters.each do |adapter|
@@ -39,11 +37,11 @@ module ActiveRecord
       @@registered_queries ||= {} of String => Query
     end
 
-    def self.build(table_name, register = true)
-      new(table_name, register)
+    def self.build(table_name, primary_field, fields, register = true)
+      new(table_name, primary_field, fields, register)
     end
 
-    def initialize(@table_name, register = true)
+    def initialize(@table_name, @primary_field, @fields, register = true)
       @last_id = 0
       @records = [] of Hash(String, ActiveRecord::SupportedType)
       @deleted = [] of Int32
@@ -55,7 +53,7 @@ module ActiveRecord
       records[(primary_key as Int32) - 1]
     end
 
-    def create(fields, primary_field)
+    def create(fields)
       @last_id += 1
       records << fields.dup.merge({ primary_field => last_id })
       last_id
@@ -114,7 +112,7 @@ module ActiveRecord
     end
 
     def _reset
-      initialize(@table_name, false)
+      initialize(@table_name, @primary_field, @fields, false)
     end
   end
 

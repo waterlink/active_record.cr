@@ -131,7 +131,7 @@ module ActiveRecord
     end
 
     protected def self.adapter
-      @@adapter ||= Registry.adapter(adapter_name).build(table_name_value)
+      @@adapter ||= Registry.adapter(adapter_name).build(table_name_value, primary_field, fields)
     end
 
     private def self.adapter_name
@@ -171,9 +171,7 @@ module ActiveRecord
     def create
       set_field(
         self.class.primary_field,
-        self.class.adapter.create(
-          fields.to_h, self.class.primary_field
-        )
+        self.class.adapter.create(fields.to_h),
       )
       self
     end

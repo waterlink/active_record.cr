@@ -19,8 +19,8 @@ module ActiveRecord
   abstract class Adapter
     extend AdapterHelper
 
-    abstract def self.build(table_name, register = true)
-    abstract def create(fields, primary_field)
+    abstract def self.build(table_name, primary_field, fields, register = true)
+    abstract def create(fields)
     abstract def find(id)
     abstract def index
     abstract def where(query_hash)

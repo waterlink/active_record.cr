@@ -1,9 +1,8 @@
 class FakeAdapter < ActiveRecord::Adapter
-  getter table_name
-  getter adapter
+  getter adapter, table_name, primary_field, fields
 
-  def initialize(@table_name, register = true)
-    @adapter = ActiveRecord::NullAdapter.new(table_name.not_nil!, register)
+  def initialize(@table_name, @primary_field, @fields, register = true)
+    @adapter = ActiveRecord::NullAdapter.new(table_name.not_nil!, primary_field, fields, register)
   end
 
   def self.instance
@@ -14,8 +13,8 @@ class FakeAdapter < ActiveRecord::Adapter
     @@instance = nil
   end
 
-  def self.build(table_name, register = true)
-    (@@instance ||= new(table_name, register)).not_nil!
+  def self.build(table_name, primary_field, fields, register = true)
+    (@@instance ||= new(table_name, primary_field, fields, register)).not_nil!
   end
 
   macro delegate(to, method)
@@ -24,7 +23,7 @@ class FakeAdapter < ActiveRecord::Adapter
     end
   end
 
-  delegate adapter, create(fields, primary_field)
+  delegate adapter, create(fields)
   delegate adapter, find(id)
   delegate adapter, index
   delegate adapter, where(query_hash)
