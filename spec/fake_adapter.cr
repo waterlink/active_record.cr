@@ -25,7 +25,7 @@ class FakeAdapter < ActiveRecord::Adapter
   end
 
   delegate adapter, create(fields, primary_field)
-  delegate adapter, read(id)
+  delegate adapter, find(id)
   delegate adapter, index
   delegate adapter, where(query_hash)
   delegate adapter, where(query, params)

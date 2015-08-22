@@ -164,8 +164,8 @@ module ActiveRecord
       self.fields.to_h == other.fields.to_h
     end
 
-    def self.read(primary_key)
-      build(adapter.read(primary_key)) as self
+    def self.find(primary_key)
+      build(adapter.find(primary_key)) as self
     end
 
     def create
