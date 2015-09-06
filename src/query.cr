@@ -2,9 +2,9 @@ module ActiveRecord
   class Query
     include QueryObject
 
-    macro alias_method(new_name, name)
-      def {{new_name.id}}(*args, &blk)
-        {{name.id}}(*args, &blk)
+    macro alias_operation(new_name, name)
+      def {{new_name.id}}(*args)
+        {{name.id}}(*args)
       end
     end
 
@@ -23,25 +23,25 @@ module ActiveRecord
       binary_op(Or, other)
     end
 
-    alias_method :|, :or
+    alias_operation :|, :or
 
     def and(other)
       binary_op(And, other)
     end
 
-    alias_method :&, :and
+    alias_operation :&, :and
 
     def xor(other)
       binary_op(Xor, other)
     end
 
-    alias_method :^, :xor
+    alias_operation :^, :xor
 
     def not
       unary_op(Not)
     end
 
-    alias_method :!, :not
+    alias_operation :!, :not
 
     def is_true
       unary_op(IsTrue)
