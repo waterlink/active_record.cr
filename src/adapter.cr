@@ -22,7 +22,7 @@ module ActiveRecord
     abstract def self.build(table_name, primary_field, fields, register = true)
     abstract def create(fields)
     abstract def find(id)
-    abstract def index
+    abstract def all
     abstract def where(query_hash : Hash)
     abstract def where(query : Query)
     abstract def update(id, fields)

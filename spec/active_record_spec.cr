@@ -90,7 +90,7 @@ class Post < ActiveRecord::Model
   field_level :protected
 
   def self.latest
-    index
+    all
   end
 
   def short_content
@@ -239,20 +239,20 @@ module ActiveRecord
       end
     end
 
-    describe ".index" do
+    describe ".all" do
       it "finds all records" do
         p1 = new_person.create
         p2 = new_other_person.create
         p3 = new_other_person.create
 
-        Person.index.should eq([p1, p2, p3])
+        Person.all.should eq([p1, p2, p3])
       end
 
       it "works correctly with custom methods" do
         post = Post.create({ "title" => "My first post",
                              "content" => "Lots of content here" * 100 })
 
-        Post.index.first.short_content.should eq("Lots of content h...")
+        Post.all.first.short_content.should eq("Lots of content h...")
       end
     end
 

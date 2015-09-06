@@ -59,7 +59,7 @@ module ActiveRecord
       last_id
     end
 
-    def index
+    def all
       records
     end
 

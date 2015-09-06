@@ -209,8 +209,8 @@ module ActiveRecord
         adapter.where(query, params).map { |fields| new(fields) }
       end
 
-      {{level.id}} def self.index
-        adapter.index.map { |fields| new(fields) }
+      {{level.id}} def self.all
+        adapter.all.map { |fields| new(fields) }
       end
     end
 
