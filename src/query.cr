@@ -2,6 +2,12 @@ module ActiveRecord
   class Query
     include QueryObject
 
+    macro alias_method(new_name, name)
+      def {{new_name.id}}(*args, &blk)
+        {{name.id}}(*args, &blk)
+      end
+    end
+
     def initialize(@expression)
     end
 
