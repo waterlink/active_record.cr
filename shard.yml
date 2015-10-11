@@ -1,0 +1,7 @@
+name: active_record
+version: 0.1.0
+
+development_dependencies:
+  mocks:
+    github: waterlink/mocks.cr
+    branch: master
