@@ -1,6 +1,11 @@
 name: active_record
 version: 0.1.0
 
+authors:
+- Oleksii Fedorov <waterlink000@gmail.com>
+
+license: MIT
+
 development_dependencies:
   mocks:
     github: waterlink/mocks.cr
