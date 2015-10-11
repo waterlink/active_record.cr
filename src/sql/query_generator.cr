@@ -147,7 +147,7 @@ module ActiveRecord
 
       private def generate_binary_op(query, separator, param_count, parenthesis = false)
         query_a = _generate(query.receiver, param_count)
-        param_count += query_a.params.keys.count
+        param_count += query_a.params.keys.size
 
         query_b = _generate(query.argument, param_count)
 
