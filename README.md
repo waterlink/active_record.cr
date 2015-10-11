@@ -27,12 +27,12 @@ Don't confuse with Ruby's activerecord: aim of this is to be true to OO techniqu
 
 ## Installation
 
-Add it to `Projectfile`
+Add it to `shard.yml`:
 
-```crystal
-deps do
-  github "waterlink/active_record.cr"
-end
+```yaml
+dependencies:
+  active_record:
+    github: waterlink/active_record.cr
 ```
 
 ## Usage
