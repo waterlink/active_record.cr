@@ -3,7 +3,7 @@ require "../src/criteria"
 
 module ActiveRecord
   create_double "Condition" do
-    mock instance.==(other)
+    mock (instance == other), Bool
   end
 
   describe Query do
