@@ -73,7 +73,7 @@ class Person < ActiveRecord::Model
 end
 ```
 
-### Create new record
+### Create a new record
 
 ```crystal
 # Combine .new(..) and #create
@@ -125,7 +125,7 @@ Person.read(127).delete
 
 ### Enforcing encapsulation
 
-If you care about OO techniques, code quality and handling complexity, please enable this for you models.
+If you care about OO techniques, code quality and handling complexity, please enable this for your models.
 
 ```crystal
 class Person < ActiveRecord::Model
