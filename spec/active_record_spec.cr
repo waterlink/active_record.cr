@@ -192,12 +192,12 @@ module ActiveRecord
         person.id.should_not be_a(Int::Null)
         person.should_not eq(new_person)
         person.should_not eq(new_person.create)
-        Person.find(person.id).should eq(person)
+        Person.get(person.id).should eq(person)
 
         example = AnotherModel.new.create
         example.id.should_not be_a(Int::Null)
         example.should_not eq(AnotherModel.new)
-        AnotherModel.find(example.id).should eq(example)
+        AnotherModel.get(example.id).should eq(example)
       end
 
       it "can be used through .create" do
@@ -205,42 +205,42 @@ module ActiveRecord
         person.id.should_not be_a(Int::Null)
         person.should_not eq(Person.new({ "last_name" => "john" }))
         person.should_not eq(Person.create({ "last_name" => "john" }))
-        Person.find(person.id).should eq(person)
+        Person.get(person.id).should eq(person)
 
         ghost = Person.create
         ghost.id.should_not be_a(Int::Null)
         ghost.should_not eq(Person.new)
         ghost.should_not eq(Person.create)
-        Person.find(ghost.id).should eq(ghost)
+        Person.get(ghost.id).should eq(ghost)
       end
     end
 
-    describe ".find" do
-      it "finds record properly" do
+    describe ".get" do
+      it "gets record properly" do
         person = new_person.create
         other_person = new_other_person.create
 
-        Person.find(person.id).should eq(person)
-        Person.find(other_person.id).should eq(other_person)
-        Person.find(person.id).should_not eq(other_person)
-        Person.find(other_person.id).should_not eq(person)
+        Person.get(person.id).should eq(person)
+        Person.get(other_person.id).should eq(other_person)
+        Person.get(person.id).should_not eq(other_person)
+        Person.get(other_person.id).should_not eq(person)
       end
 
       it "is of right class" do
         person = new_person.create
-        Person.find(person.id).get_tax_exemption.should eq(0.17)
+        Person.get(person.id).get_tax_exemption.should eq(0.17)
       end
 
       it "works correctly with encapsulated levels" do
         post = Post.create({ "title" => "My first post",
                              "content" => "Lots of content here" * 100 })
 
-        Post.find(post.id).short_content.should eq("Lots of content h...")
+        Post.get(post.id).short_content.should eq("Lots of content h...")
       end
     end
 
     describe ".all" do
-      it "finds all records" do
+      it "gets all records" do
         p1 = new_person.create
         p2 = new_other_person.create
         p3 = new_other_person.create
@@ -257,7 +257,7 @@ module ActiveRecord
     end
 
     describe ".where(query_hash)" do
-      it "finds multiple records" do
+      it "gets multiple records" do
         p1 = new_person.create
         p2 = new_other_person.create
         p3 = new_other_person.create
@@ -278,7 +278,7 @@ module ActiveRecord
     end
 
     describe ".where(Query)" do
-      it "finds multiple records by raw parametrized query" do
+      it "gets multiple records by raw parametrized query" do
         p1 = new_person.create
         p2 = new_other_person.create
         p3 = new_other_person.create
@@ -301,18 +301,18 @@ module ActiveRecord
       it "does not change in data store when haven't been called yet" do
         person = new_person.create
         person.number_of_dependents = 4
-        Person.find(person.id).should_not eq(person)
+        Person.get(person.id).should_not eq(person)
       end
 
       it "updates record in store" do
         person = new_person.create
-        person_a = Person.find(person.id)
+        person_a = Person.get(person.id)
         person.number_of_dependents = 4
         person.update
 
-        Person.find(person.id).should eq(person)
+        Person.get(person.id).should eq(person)
         person.should_not eq(person_a)
-        Person.find(person.id).should_not eq(person_a)
+        Person.get(person.id).should_not eq(person_a)
       end
     end
 
@@ -320,9 +320,9 @@ module ActiveRecord
       it "removes it from data store" do
         person = new_person.create
         person.delete
-        Person.find(person.id).should_not eq(person)
-        Person.find(person.id).should be_a(Person::Null)
-        Person.find(person.id).to_s.should eq("No person")
+        Person.get(person.id).should_not eq(person)
+        Person.get(person.id).should be_a(Person::Null)
+        Person.get(person.id).to_s.should eq("No person")
       end
     end
 

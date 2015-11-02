@@ -142,7 +142,7 @@ end
 
 # Enforces you to maintain encapsulation, ie: not expose your data -
 # put behavior in the same place the data it needs
-person = Person.find(127)
+person = Person.get(127)    # or Person[127]
 person.first_name   #=> Error: unable to call private method first_name
 
 # Enforces you to maintain DRYness to some extent, ie: not leak

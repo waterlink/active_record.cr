@@ -48,7 +48,7 @@ module ActiveRecord
       self.class.adapters << self if register
     end
 
-    def find(primary_key)
+    def get(primary_key)
       return nil if deleted.includes?((primary_key as Int32) - 1)
       records[(primary_key as Int32) - 1]
     end
