@@ -386,6 +386,13 @@ example-by-example while replacing stub implementation with real one.
 When you are done, congratulate yourself and push first release (git tag) to
 Github (or whatever git upstream you use).
 
+Don't forget to register your adapter:
+
+```crystal
+# At the end of src/postgres_adapter.cr
+ActiveRecord::Registry.register_adapter("postgres", PostgresAdapter::Adapter)
+```
+
 Congratulations, you made it!
 
 ## Contributing
