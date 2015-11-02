@@ -284,7 +284,7 @@ psql $PARAMS -c "create user crystal_pg with superuser password 'crystal_pg'"
 
 psql $PARAMS crystal_pg_test -c "drop table if exists people; create table people( id serial primary key, last_name varchar(50), first_name varchar(50), number_of_dependents int )"
 psql $PARAMS crystal_pg_test -c "drop table if exists something_else; create table something_else( id serial primary key, name varchar(50) )"
-psql $PARAMS crystal_pg_test -c "drop table if exists posts; create table posts( id serial primary key, title varchar(50), content varchar(50) )"
+psql $PARAMS crystal_pg_test -c "drop table if exists posts; create table posts( id serial primary key, title varchar(50), content text )"
 ```
 
 Make all scripts executable:
