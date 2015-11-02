@@ -19,7 +19,7 @@ Don't confuse with Ruby's activerecord: aim of this is to be true to OO techniqu
 - [x] Default `table_name` implementation
 - [x] Implement `mysql` adapter
 - [x] Populate this list further by making some simple app on top of it
-- [ ] Describe in readme how to implement your own adapter
+- [x] Describe in readme how to implement your own adapter
 - [ ] Add transaction features
 - [ ] Implement `postgres` driver and adapter and set it to default
 - [ ] Implement `sqlite` driver and adapter
@@ -188,6 +188,205 @@ crystal spec   # run specs
 ```
 
 Just use normal TDD development style.
+
+### Creating your own database adapter
+
+So, lets create a postgres adapter. First lets init the repo:
+
+```bash
+# This creates 'postgres_adapter' library and names directory as 'postgres_adapter.cr'.
+# Effectively giving you structure './postgres_adapter.cr/src/mysql_adapter.cr'.
+crystal init lib postgres_adapter postgres_adapter.cr
+
+# And lets cd into it right away:
+cd postgres_adapter.cr/
+```
+
+Next feel free to edit the README to reflect the usage as you see fit. And
+check out if generated LICENSE file is OK.
+
+At this point it is a good idea to make an initial commit to git and push your
+changes to Github (or whatever git upstream you use).
+
+Before the next step you will need `active_record` bundled as a submodule at
+path `modules/active_record`, for that you do:
+
+```bash
+git submodule add https://github.com/waterlink/active_record.cr modules/active_record
+```
+
+You need to have it as a submodule to be able to require code from `spec/` directory.
+
+Next step is to add appropriate integration test boilerplate:
+
+Integration spec:
+
+```crystal
+# integration/integration_spec.cr
+require "./spec_helper"
+```
+
+Integration spec helper:
+
+```crystal
+# integration/spec_helper.cr
+require "spec"
+require "../src/postgres_adapter"
+require "active_record/null_adapter"
+
+# Register our adapter as 'null' adapter, effectively overriding what was
+# registered before by 'active_record':
+ActiveRecord::Registry.register_adapter("null", PostgresAdapter::Adapter)
+
+# Cleanup database before and after each example:
+Spec.before_each do
+  PostgresAdapter::Adapter._reset_do_this_only_in_specs_78367c96affaacd7
+end
+Spec.after_each do
+  PostgresAdapter::Adapter._reset_do_this_only_in_specs_78367c96affaacd7
+end
+
+# Require fake adapter and kick off the integration spec
+require "../modules/active_record/spec/fake_adapter"
+require "../modules/active_record/spec/active_record_spec"
+```
+
+Integration test runner script:
+
+```bash
+# bin/test
+#!/usr/bin/env bash
+
+set -e
+
+# Run unit tests
+crystal spec
+
+# Compile integration tests that are shipped with 
+crystal build integration/integration_spec.cr -o integration/integration_spec -D active_record_adapter
+./integration/integration_spec --fail-fast -v $*
+```
+
+Script for setting up the database:
+
+```bash
+# script/setup-test-db.sh
+#!/usr/bin/env bash
+
+# By providing 'PG_USER' and ('PG_PASS' or `PG_ASK_PASS`) you can
+# control how this script will authenticate to local pg server.
+PARAMS="-U ${PG_USER:-postgres}"
+[[ -z "$PG_PASS" ]] || PGPASSWORD="$PG_PASS"
+[[ -z "$PG_ASK_PASS" ]] || PARAMS="$PARAMS -W"
+
+psql $PARAMS -c "create database crystal_pg_test"
+psql $PARAMS -c "create user crystal_pg with superuser password 'crystal_pg'"
+
+psql $PARAMS crystal_pg_test -c "drop table if exists people; create table people( id serial primary key, last_name varchar(50), first_name varchar(50), number_of_dependents int )"
+psql $PARAMS crystal_pg_test -c "drop table if exists something_else; create table something_else( id serial primary key, name varchar(50) )"
+psql $PARAMS crystal_pg_test -c "drop table if exists posts; create table posts( id serial primary key, title varchar(50), content varchar(50) )"
+```
+
+Make all scripts executable:
+
+```bash
+chmod a+x bin/test
+chmod a+x script/setup-test-db.sh
+```
+
+And setup test db:
+
+```bash
+script/setup-test-db.sh
+```
+
+If you run tests at this point with `bin/test`, you should get compile error,
+since you have not implemented `ActiveRecord::Adapter` protocol. You can find
+it [here](/src/adapter.cr).
+
+First make some stub implementation for this protocol:
+
+```crystal
+# src/postgres_adapter.cr
+require "active_record"
+require "active_record/adapter"
+
+module PostgresAdapter
+  class Adapter < ActiveRecord::Adapter
+    def self.build(table_name, primary_field, fields, register = true)
+      new(table_name, primary_field, fields, register)
+    end
+
+    def self.register(adapter)
+      adapters << adapter
+    end
+
+    def self.adapters
+      (@@_adapters ||= [] of self).not_nil!
+    end
+
+    getter table_name, primary_field, fields
+
+    def initialize(@table_name, @primary_field, @fields, register = true)
+      self.class.register(self)
+    end
+
+    def create(fields)
+      0
+    end
+
+    def get(id)
+      nil
+    end
+
+    def all
+      [] of Hash(String, ActiveRecord::SupportedType)
+    end
+
+    def where(query_hash : Hash)
+      all
+    end
+
+    def where(query : ActiveRecord::Query)
+      all
+    end
+
+    def update(id, fields)
+    end
+
+    def delete(id)
+    end
+
+    # Resets all data for all registered adapter instances of this kind
+    def self._reset_do_this_only_in_specs_78367c96affaacd7
+      adapters.each &_reset_do_this_only_in_specs_78367c96affaacd7
+    end
+
+    # Resets all data for current table (adapter instance)
+    def _reset_do_this_only_in_specs_78367c96affaacd7
+    end
+  end
+end
+```
+
+Of course you need to include `active_record` as a dependency in your `shard.yml`:
+
+```yml
+dependencies:
+  active_record:
+    github: waterlink/active_record.cr
+```
+
+To install it, run `shards` or `crystal deps`.
+
+With this boilerplate you should have actually compiled integration test and it
+should be RED. Next step would be to follow TDD and make it green
+example-by-example while replacing stub implementation with real one.
+
+When you are done, congratulate yourself and push first release (git tag) to
+Github (or whatever git upstream you use).
+
+Congratulations, you made it!
 
 ## Contributing
 
