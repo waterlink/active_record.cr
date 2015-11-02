@@ -180,8 +180,12 @@ module ActiveRecord
       self._raw_fields == other._raw_fields
     end
 
-    def self.find(primary_key)
-      build(adapter.find(primary_key)) as self
+    def self.get(primary_key)
+      build(adapter.get(primary_key)) as self
+    end
+
+    def self.[](primary_key)
+      get(primary_key)
     end
 
     def create
