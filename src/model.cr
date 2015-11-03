@@ -134,7 +134,7 @@ module ActiveRecord
     end
 
     macro inherited
-      initialize_model({{@type.name}})
+      initialize_model({{@type.name.id.stringify.gsub(/:/, "__")}})
     end
 
     private def self.register_field(name, its_type)
