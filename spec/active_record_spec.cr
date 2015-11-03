@@ -43,8 +43,6 @@ end
 class Example; end
 
 class Person < ActiveRecord::Model
-
-  name Person
   adapter null
   table_name people
 
@@ -63,23 +61,17 @@ class Person < ActiveRecord::Model
       "No person"
     end
   end
-
 end
 
 class AnotherModel < ActiveRecord::Model
-
-  name AnotherModel
   adapter null
   table_name something_else
 
   primary id :: Int
   field name :: String
-
 end
 
 class Post < ActiveRecord::Model
-
-  name Post
   adapter null
   table_name posts
 
@@ -99,8 +91,6 @@ class Post < ActiveRecord::Model
 end
 
 class ExampleModel < ActiveRecord::Model
-
-  name ExampleModel
   adapter fake
 
   primary  id    :: Int
@@ -108,8 +98,6 @@ class ExampleModel < ActiveRecord::Model
 end
 
 class AnotherExampleModel < ActiveRecord::Model
-
-  name AnotherExampleModel
   adapter fake
   table_name some_models
 
