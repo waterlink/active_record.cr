@@ -76,6 +76,30 @@ class String
   end
 end
 
+struct Time
+  def self.null_class
+    Null
+  end
+
+  struct Null
+    include Comparable(Time)
+
+    def to_s(io)
+      io << ""
+    end
+
+    macro method_missing(name, args, block)
+      Time.new(0).{{name.id}}({{args.argify}}) {{block}}
+    end
+  end
+
+  include Comparable(Null)
+
+  def <=>(other : Null)
+    self <=> Time.new(0)
+  end
+end
+
 active_record_define_not_null_for(:struct, Int)
 
 active_record_define_not_null_for(:struct, Int8)
@@ -89,12 +113,15 @@ active_record_define_not_null_for(:struct, UInt64)
 
 active_record_define_not_null_for(:class, String)
 
+active_record_define_not_null_for(:struct, Time)
+
 module ActiveRecord
   alias IntTypes = Int8 | UInt8 | Int16 | UInt16 | Int32 | UInt32 | Int64 | UInt64 | Int::Null
   alias StringTypes = String | String::Null
-  alias SupportedTypeWithoutString = Int8 | UInt8 | Int16 | UInt16 | Int32 | UInt32 | Int64 | UInt64 | Int::Null
+  alias TimeTypes = Time | Time::Null
+  alias SupportedTypeWithoutString = Int8 | UInt8 | Int16 | UInt16 | Int32 | UInt32 | Int64 | UInt64 | Int::Null | Time | Time::Null
   alias SupportedType = StringTypes | SupportedTypeWithoutString
-  alias NonNullType = String | Int8 | Int32 | Int16 | Int64 | UInt8 | UInt32 | UInt16 | UInt64
+  alias NonNullType = String | Int8 | Int32 | Int16 | Int64 | UInt8 | UInt32 | UInt16 | UInt64 | Time
 
   class NullCheckFailed < Exception; end
 end
