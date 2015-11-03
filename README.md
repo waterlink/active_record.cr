@@ -11,7 +11,7 @@ Don't confuse with Ruby's activerecord: aim of this is to be true to OO techniqu
 - [x] Implement model definition syntax
 - [x] Implement `field_level`
 - [x] Implement `NullAdapter` (in-memory, for specs)
-- [x] Implement `#create`, `.create` and `.read`
+- [x] Implement `#create`, `.create` and `.get`
 - [x] Implement `.where`
 - [x] Implement `query_level`
 - [x] Implement `#update` and `#delete`
@@ -87,10 +87,10 @@ Person.create({ "first_name"           => "John",
                 "number_of_dependents" => 3 })     #=> #<Person: ...>
 ```
 
-### Read existing record by id
+### Get existing record by id
 
 ```crystal
-Person.read(127)  #=> #<Person: @id=127, ...>
+Person.get(127)  #=> #<Person: @id=127, ...>
 ```
 
 ### Query multiple records
@@ -112,7 +112,7 @@ See [Query DSL](#query-dsl)
 ### Update existing record
 
 ```crystal
-person = Person.read(127)
+person = Person.get(127)
 person.number_of_dependents = 0
 person.update
 ```
@@ -120,7 +120,7 @@ person.update
 ### Delete existing record
 
 ```crystal
-Person.read(127).delete
+Person.get(127).delete
 ```
 
 ### Enforcing encapsulation
@@ -262,7 +262,7 @@ set -e
 # Run unit tests
 crystal spec
 
-# Compile integration tests that are shipped with 
+# Compile integration tests that are shipped with
 crystal build integration/integration_spec.cr -o integration/integration_spec -D active_record_adapter
 ./integration/integration_spec --fail-fast -v $*
 ```
