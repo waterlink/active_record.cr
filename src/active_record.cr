@@ -1,4 +1,4 @@
-require "./active_record/version"
+require "./version"
 require "./registry"
 require "./types"
 require "./model"
