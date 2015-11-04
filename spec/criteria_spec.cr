@@ -37,7 +37,6 @@ module ActiveRecord
 end
 
 class AModel < ActiveRecord::Model
-  name AModel
   adapter null
   table_name a_models
 
