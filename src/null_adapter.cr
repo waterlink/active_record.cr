@@ -55,7 +55,7 @@ module ActiveRecord
 
     def create(fields)
       @last_id += 1
-      records << fields.dup.merge({ primary_field => last_id })
+      records << fields.dup.merge({primary_field => last_id})
       last_id
     end
 

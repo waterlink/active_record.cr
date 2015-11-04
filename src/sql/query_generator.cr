@@ -27,7 +27,7 @@ module ActiveRecord
 
       def concat_with(separator, other, parenthesis)
         Query.new("#{self.query(parenthesis)}#{separator}#{other.query(parenthesis)}",
-                  self.params.merge(other.params))
+          self.params.merge(other.params))
       end
 
       def wrap_with(prefix, suffix, parenthesis)
@@ -41,7 +41,7 @@ module ActiveRecord
     end
 
     class QueryGenerator < ::ActiveRecord::QueryGenerator
-      alias HandledTypes = ::ActiveRecord::SupportedType|::ActiveRecord::Query
+      alias HandledTypes = ::ActiveRecord::SupportedType | ::ActiveRecord::Query
 
       class Fail < ArgumentError
       end
@@ -138,7 +138,7 @@ module ActiveRecord
 
       def _generate(query : ::ActiveRecord::SupportedType, param_count = 0)
         param_count += 1
-        Query.new(":#{param_count}", { "#{param_count}" => query })
+        Query.new(":#{param_count}", {"#{param_count}" => query})
       end
 
       def _generate(query, params_count)

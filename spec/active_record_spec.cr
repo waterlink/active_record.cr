@@ -4,7 +4,7 @@ module ActiveRecord
   class MoreDependents < NullAdapter::Query
     def call(params, fields)
       return false unless fields.has_key?("number_of_dependents") &&
-        params.has_key?("1")
+                          params.has_key?("1")
       actual = fields["number_of_dependents"] as Int
       expected = params["1"] as Int
       actual > expected
@@ -16,7 +16,7 @@ module ActiveRecord
   class LessDependents < NullAdapter::Query
     def call(params, fields)
       return false unless fields.has_key?("number_of_dependents") &&
-        params.has_key?("1")
+                          params.has_key?("1")
       actual = fields["number_of_dependents"] as Int
       expected = params["1"] as Int
       actual < expected
@@ -28,7 +28,7 @@ module ActiveRecord
   class LessAndMoreDependents < NullAdapter::Query
     def call(params, fields)
       return false unless fields.has_key?("number_of_dependents") &&
-        params.has_key?("1") && params.has_key?("2")
+                          params.has_key?("1") && params.has_key?("2")
       actual = fields["number_of_dependents"] as Int
       low = params["1"] as Int
       high = params["2"] as Int
@@ -37,7 +37,7 @@ module ActiveRecord
   end
 
   NullAdapter.register_query("(number_of_dependents > :1) AND (number_of_dependents < :2)",
-                             LessAndMoreDependents.new)
+    LessAndMoreDependents.new)
 end
 
 class Example; end
@@ -75,9 +75,9 @@ class Post < ActiveRecord::Model
   adapter null
   table_name posts
 
-  primary id      :: Int
-  field   title   :: String
-  field   content :: String
+  primary id :: Int
+  field title :: String
+  field content :: String
 
   field_level :protected
 
@@ -93,28 +93,28 @@ end
 class ExampleModel < ActiveRecord::Model
   adapter fake
 
-  primary  id    :: Int
-  field    name  :: String
+  primary id :: Int
+  field name :: String
 end
 
 class AnotherExampleModel < ActiveRecord::Model
   adapter fake
   table_name some_models
 
-  primary  id    :: Int
-  field    name  :: String
+  primary id :: Int
+  field name :: String
 end
 
 def new_person
-  Person.new({ "first_name"           => "john",
-               "last_name"            => "smith",
-               "number_of_dependents" => 3 })
+  Person.new({"first_name"           => "john",
+    "last_name"            => "smith",
+    "number_of_dependents" => 3})
 end
 
 def new_other_person
-  Person.new({ "first_name"           => "james",
-               "last_name"            => "blake",
-               "number_of_dependents" => 1 })
+  Person.new({"first_name"           => "james",
+    "last_name"            => "blake",
+    "number_of_dependents" => 1})
 end
 
 def new_ghost_person
@@ -123,7 +123,6 @@ end
 
 module ActiveRecord
   describe Model do
-
     describe ".new" do
       it "creates person" do
         new_person.should be_a(Person)
@@ -138,8 +137,8 @@ module ActiveRecord
       end
 
       it "doesn't care about non-defined fields" do
-        person = Person.new({ "last_name" => "John", "height" => 35 })
-        person.should eq(Person.new({ "last_name" => "John" }))
+        person = Person.new({"last_name" => "John", "height" => 35})
+        person.should eq(Person.new({"last_name" => "John"}))
       end
     end
 
@@ -189,10 +188,10 @@ module ActiveRecord
       end
 
       it "can be used through .create" do
-        person = Person.create({ "last_name" => "john" })
+        person = Person.create({"last_name" => "john"})
         person.id.should_not be_a(Int::Null)
-        person.should_not eq(Person.new({ "last_name" => "john" }))
-        person.should_not eq(Person.create({ "last_name" => "john" }))
+        person.should_not eq(Person.new({"last_name" => "john"}))
+        person.should_not eq(Person.create({"last_name" => "john"}))
         Person.get(person.id).should eq(person)
 
         ghost = Person.create
@@ -220,8 +219,8 @@ module ActiveRecord
       end
 
       it "works correctly with encapsulated levels" do
-        post = Post.create({ "title" => "My first post",
-                             "content" => "Lots of content here" * 100 })
+        post = Post.create({"title"   => "My first post",
+          "content" => "Lots of content here" * 100})
 
         Post.get(post.id).short_content.should eq("Lots of content h...")
       end
@@ -237,8 +236,8 @@ module ActiveRecord
       end
 
       it "works correctly with custom methods" do
-        post = Post.create({ "title" => "My first post",
-                             "content" => "Lots of content here" * 100 })
+        post = Post.create({"title"   => "My first post",
+          "content" => "Lots of content here" * 100})
 
         Post.all.first.short_content.should eq("Lots of content h...")
       end
@@ -254,14 +253,14 @@ module ActiveRecord
         p6 = new_person.create
         p7 = new_other_person.create
 
-        Person.where({ "number_of_dependents" => 0 }).should eq([] of Person)
-        Person.where({ "first_name" => "john" }).should eq([p1, p4, p5, p6])
-        Person.where({ "number_of_dependents" => 1 }).should eq([p2, p3, p7])
-        Person.where({ "first_name" => "john",
-                       "number_of_dependents" => 1 }).should eq([] of Person)
-        Person.where({ "first_name" => "john",
-                       "number_of_dependents" => 3 }).should eq([p1, p4, p5, p6])
-        Person.where({ "number_of_dependents" => 3 }).should eq([p1, p4, p5, p6])
+        Person.where({"number_of_dependents" => 0}).should eq([] of Person)
+        Person.where({"first_name" => "john"}).should eq([p1, p4, p5, p6])
+        Person.where({"number_of_dependents" => 1}).should eq([p2, p3, p7])
+        Person.where({"first_name"           => "john",
+          "number_of_dependents" => 1}).should eq([] of Person)
+        Person.where({"first_name"           => "john",
+          "number_of_dependents" => 3}).should eq([p1, p4, p5, p6])
+        Person.where({"number_of_dependents" => 3}).should eq([p1, p4, p5, p6])
       end
     end
 
@@ -274,14 +273,14 @@ module ActiveRecord
         p5 = new_person.create
         p6 = new_person.create
         p7 = new_other_person.create
-        p8 = Person.create({ "last_name" => "maria", "number_of_dependents" => 2 })
+        p8 = Person.create({"last_name" => "maria", "number_of_dependents" => 2})
 
         Person.where(criteria("number_of_dependents") > 1).should eq([p1, p4, p5, p6, p8])
 
         Person.where(criteria("number_of_dependents") < 3).should eq([p2, p3, p7, p8])
 
         Person.where((criteria("number_of_dependents") > 1).and(criteria("number_of_dependents") < 3))
-          .should eq([p8])
+              .should eq([p8])
       end
     end
 
@@ -308,20 +307,20 @@ module ActiveRecord
       it "removes it from data store" do
         person = new_person.create
         person.delete
-        Person.get(person.id).should_not eq(person)
-        Person.get(person.id).should be_a(Person::Null)
-        Person.get(person.id).to_s.should eq("No person")
+        expect_raises(ActiveRecord::RecordNotFoundException, "Record not found with given id") do
+          Person.get(person.id)
+        end
       end
     end
 
     describe ".table_name" do
       it "equals to provided value" do
-        AnotherExampleModel.create({ "name" => "hello world" })
+        AnotherExampleModel.create({"name" => "hello world"})
         FakeAdapter.instance.table_name.should eq("some_models")
       end
 
       it "equals to plural form by default" do
-        ExampleModel.create({ "name" => "hello world" })
+        ExampleModel.create({"name" => "hello world"})
         FakeAdapter.instance.table_name.should eq("example_models")
       end
     end

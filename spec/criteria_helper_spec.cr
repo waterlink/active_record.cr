@@ -11,7 +11,7 @@ module ActiveRecord
     describe "#criteria" do
       it "creates an instance of criteria" do
         obj.criteria("number_of_dependents")
-          .should be(Criteria.build("number_of_dependents"))
+           .should be(Criteria.build("number_of_dependents"))
       end
     end
   end
