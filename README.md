@@ -23,7 +23,9 @@ Don't confuse with Ruby's activerecord: aim of this is to be true to OO techniqu
 - [ ] Add transaction features
 - [ ] Implement `postgres` driver and adapter and set it to default
 - [ ] Implement `sqlite` driver and adapter
-- [ ] Support more types (currently only Int|String are supported)
+- [ ] Support more types (currently only `Int | String` are supported)
+  - [x] `Time`
+  - [ ] `Bool`
 
 ## Installation
 
@@ -174,6 +176,11 @@ Supported comparison operators: `== != > >= < <=`
 Supported logic operators: `or | and & xor ^ not !`
 
 Supported is operators: `is_true is_not_true is_false is_not_false is_unknown is_not_unknown is_null is_not_null`
+
+## Known database adapters
+
+- [mysql_adapter.cr](https://github.com/waterlink/mysql_adapter.cr) [![Build Status](https://travis-ci.org/waterlink/mysql_adapter.cr.svg?branch=master)](https://travis-ci.org/waterlink/mysql_adapter.cr)
+- [postgres_adapter.cr](https://github.com/waterlink/postgres_adapter.cr) [![Build Status](https://travis-ci.org/waterlink/postgres_adapter.cr.svg?branch=master)](https://travis-ci.org/waterlink/postgres_adapter.cr)
 
 ## Development
 
