@@ -37,12 +37,28 @@ module ActiveRecord
         end
       end
 
+      class Time
+        getter fields
+
+        def initialize
+          @fields = {} of ::String => ::Time
+        end
+
+        def set_field(name, value)
+          if value.is_a?(::Time)
+            fields[name] = value
+          end
+          value
+        end
+      end
+
       private getter typed_fields
 
       def initialize
         @typed_fields = {
           "Int"    => Int.new,
           "String" => String.new,
+          "Time"   => Time.new,
         }
       end
 

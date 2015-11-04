@@ -78,6 +78,7 @@ class Post < ActiveRecord::Model
   primary id :: Int
   field title :: String
   field content :: String
+  field created_at :: Time
 
   field_level :protected
 
@@ -87,6 +88,10 @@ class Post < ActiveRecord::Model
 
   def short_content
     content[0..16] + "..."
+  end
+
+  def authored_at
+    created_at
   end
 end
 
@@ -223,6 +228,14 @@ module ActiveRecord
           "content" => "Lots of content here" * 100})
 
         Post.get(post.id).short_content.should eq("Lots of content h...")
+      end
+
+      it "works correctly with Time fields" do
+        now = Time.new
+        post = Post.create({"title"      => "My first post",
+          "content"    => "Lots of content here" * 100,
+          "created_at" => now})
+        Post.get(post.id).authored_at.should eq(now)
       end
     end
 
