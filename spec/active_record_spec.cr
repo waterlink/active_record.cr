@@ -43,8 +43,6 @@ end
 class Example; end
 
 class Person < ActiveRecord::Model
-
-  name Person
   adapter null
   table_name people
 
@@ -63,23 +61,17 @@ class Person < ActiveRecord::Model
       "No person"
     end
   end
-
 end
 
-class AnotherModel < ActiveRecord::Model
-
-  name AnotherModel
+class Another::Model < ActiveRecord::Model
   adapter null
   table_name something_else
 
   primary id :: Int
   field name :: String
-
 end
 
 class Post < ActiveRecord::Model
-
-  name Post
   adapter null
   table_name posts
 
@@ -99,8 +91,6 @@ class Post < ActiveRecord::Model
 end
 
 class ExampleModel < ActiveRecord::Model
-
-  name ExampleModel
   adapter fake
 
   primary  id    :: Int
@@ -108,8 +98,6 @@ class ExampleModel < ActiveRecord::Model
 end
 
 class AnotherExampleModel < ActiveRecord::Model
-
-  name AnotherExampleModel
   adapter fake
   table_name some_models
 
@@ -158,7 +146,7 @@ module ActiveRecord
     describe ".fields" do
       it "returns fields defined on model" do
         Person.fields.should eq(["id", "last_name", "first_name", "number_of_dependents"])
-        AnotherModel.fields.should eq(["id", "name"])
+        Another::Model.fields.should eq(["id", "name"])
       end
     end
 
@@ -194,10 +182,10 @@ module ActiveRecord
         person.should_not eq(new_person.create)
         Person.get(person.id).should eq(person)
 
-        example = AnotherModel.new.create
+        example = Another::Model.new.create
         example.id.should_not be_a(Int::Null)
-        example.should_not eq(AnotherModel.new)
-        AnotherModel.get(example.id).should eq(example)
+        example.should_not eq(Another::Model.new)
+        Another::Model.get(example.id).should eq(example)
       end
 
       it "can be used through .create" do

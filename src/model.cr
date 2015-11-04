@@ -123,10 +123,18 @@ module ActiveRecord
       define_field_macro({{level}})
     end
 
-    macro name(current_model)
+    # Deprecated and useless
+    macro name(_name)
+    end
+
+    macro initialize_model(current_model)
       {% MACRO_CURRENT << current_model %}
       MACRO_FIELDS_{{current_model.id}} = [] of String
       define_field_macro ""
+    end
+
+    macro inherited
+      initialize_model({{@type.name.id.stringify.gsub(/:/, "__")}})
     end
 
     private def self.register_field(name, its_type)

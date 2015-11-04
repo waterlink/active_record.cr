@@ -46,9 +46,6 @@ require "active_record"
 ```crystal
 class Person < ActiveRecord::Model
 
-  # Set model's name, should be unique throughout the application, mandatory
-  name Person
-
   # Set adapter, defaults to mysql (subject to change to postgres)
   # adapter sqlite
 
