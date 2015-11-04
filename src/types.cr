@@ -32,6 +32,10 @@ struct Int
       io << ""
     end
 
+    def inspect
+      "Null(Int)"
+    end
+
     macro method_missing(name, args, block)
       0.{{name.id}}({{args.argify}}) {{block}}
     end
@@ -86,6 +90,10 @@ struct Time
 
     def to_s(io)
       io << ""
+    end
+
+    def inspect
+      "Null(Time)"
     end
 
     macro method_missing(name, args, block)
