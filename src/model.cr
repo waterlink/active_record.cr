@@ -125,10 +125,6 @@ module ActiveRecord
       define_field_macro({{level}})
     end
 
-    # Deprecated and useless
-    macro name(_name)
-    end
-
     macro initialize_model(current_model)
       {% MACRO_CURRENT << current_model %}
       MACRO_FIELDS_{{current_model.id}} = [] of String
