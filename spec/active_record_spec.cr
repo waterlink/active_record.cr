@@ -231,11 +231,11 @@ module ActiveRecord
       end
 
       it "works correctly with Time fields" do
-        now = Time.new
+        now = Time.now
         post = Post.create({"title"      => "My first post",
           "content"    => "Lots of content here" * 100,
           "created_at" => now})
-        Post.get(post.id).authored_at.should eq(now)
+        Post.get(post.id).authored_at.to_utc.to_s.should eq(now.to_utc.to_s)
       end
     end
 
