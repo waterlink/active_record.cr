@@ -37,7 +37,6 @@ module ActiveRecord
 end
 
 class AModel < ActiveRecord::Model
-
   name AModel
   adapter null
   table_name a_models
@@ -58,12 +57,12 @@ end
 module ActiveRecord
   describe CriteriaHelper do
     it "is usable in model without including/extending" do
-      model_a = AModel.create({ "name" => "person" })
-      model_b = AModel.create({ "name" => "account",
-                                "other_model_id" => model_a.id })
-      model_c = AModel.create({ "name" => "subject" })
-      model_d = AModel.create({ "name" => "subscription",
-                                "other_model_id" => model_a.id })
+      model_a = AModel.create({"name" => "person"})
+      model_b = AModel.create({"name"           => "account",
+        "other_model_id" => model_a.id})
+      model_c = AModel.create({"name" => "subject"})
+      model_d = AModel.create({"name"           => "subscription",
+        "other_model_id" => model_a.id})
 
       AModel.with_name("account").should eq([model_b])
       model_a.with_me.should eq([model_b, model_d])
@@ -74,13 +73,13 @@ module ActiveRecord
     describe "#==" do
       it "returns a Query object with Equal(receiver, argument)" do
         criteria("a_field").==("hello world")
-          .should be_same_query(Query.new(Query::Equal.new(criteria("a_field"), "hello world")))
+                           .should be_same_query(Query.new(Query::Equal.new(criteria("a_field"), "hello world")))
 
         criteria("a_field").==(criteria("another_field"))
-          .should be_same_query(Query.new(Query::Equal.new(criteria("a_field"), criteria("another_field"))))
+                           .should be_same_query(Query.new(Query::Equal.new(criteria("a_field"), criteria("another_field"))))
 
         criteria("a_field").==(criteria("another_field"))
-          .should_not be_same_query(Query.new(Query::Equal.new(criteria("a_field"), criteria("a_field"))))
+                           .should_not be_same_query(Query.new(Query::Equal.new(criteria("a_field"), criteria("a_field"))))
       end
     end
 

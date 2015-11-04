@@ -2,8 +2,10 @@ require "./criteria_helper"
 require "./support"
 
 module ActiveRecord
-  class Model
+  class RecordNotFoundException < Exception
+  end
 
+  class Model
     class Fields
       class Int
         getter fields
@@ -39,7 +41,7 @@ module ActiveRecord
 
       def initialize
         @typed_fields = {
-          "Int" => Int.new,
+          "Int"    => Int.new,
           "String" => String.new,
         }
       end
@@ -189,7 +191,11 @@ module ActiveRecord
     end
 
     def self.get(primary_key)
-      build(adapter.get(primary_key)) as self
+      if adapter.get(primary_key)
+        build(adapter.get(primary_key)) as self
+      else
+        raise RecordNotFoundException.new("Record not found with given id.")
+      end
     end
 
     def self.[](primary_key)
@@ -244,7 +250,7 @@ module ActiveRecord
     private def set_field(field, value)
       return unless self.class.fields.includes?(field)
       fields[self.class.field_types[field]]
-        .set_field(field, value)
+                       .set_field(field, value)
     end
 
     def self.null_value

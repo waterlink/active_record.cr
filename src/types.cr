@@ -90,11 +90,11 @@ active_record_define_not_null_for(:struct, UInt64)
 active_record_define_not_null_for(:class, String)
 
 module ActiveRecord
-  alias IntTypes = Int8|UInt8|Int16|UInt16|Int32|UInt32|Int64|UInt64|Int::Null
-  alias StringTypes = String|String::Null
-  alias SupportedTypeWithoutString = Int8|UInt8|Int16|UInt16|Int32|UInt32|Int64|UInt64|Int::Null
-  alias SupportedType = StringTypes|SupportedTypeWithoutString
-  alias NonNullType = String|Int8|Int32|Int16|Int64|UInt8|UInt32|UInt16|UInt64
+  alias IntTypes = Int8 | UInt8 | Int16 | UInt16 | Int32 | UInt32 | Int64 | UInt64 | Int::Null
+  alias StringTypes = String | String::Null
+  alias SupportedTypeWithoutString = Int8 | UInt8 | Int16 | UInt16 | Int32 | UInt32 | Int64 | UInt64 | Int::Null
+  alias SupportedType = StringTypes | SupportedTypeWithoutString
+  alias NonNullType = String | Int8 | Int32 | Int16 | Int64 | UInt8 | UInt32 | UInt16 | UInt64
 
   class NullCheckFailed < Exception; end
 end
