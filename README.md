@@ -33,7 +33,7 @@ Add it to `shard.yml`:
 dependencies:
   active_record:
     github: waterlink/active_record.cr
-    version: 0.1.0
+    version: 0.1.1
 ```
 
 ## Usage
