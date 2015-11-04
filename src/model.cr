@@ -2,6 +2,7 @@ require "./criteria_helper"
 require "./support"
 
 class ActiveRecord::Model; end
+
 require "./model/fields"
 
 module ActiveRecord

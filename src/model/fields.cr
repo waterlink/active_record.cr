@@ -45,6 +45,21 @@ module ActiveRecord
       end
     end
 
+    class Bool
+      getter fields
+
+      def initialize
+        @fields = {} of ::String => ::Bool
+      end
+
+      def set_field(name, value)
+        if value.is_a?(::Bool)
+          fields[name] = value
+        end
+        value
+      end
+    end
+
     private getter typed_fields
 
     def initialize
@@ -52,6 +67,7 @@ module ActiveRecord
         "Int"    => Int.new,
         "String" => String.new,
         "Time"   => Time.new,
+        "Bool"   => Bool.new,
       }
     end
 
