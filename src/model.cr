@@ -113,7 +113,7 @@ module ActiveRecord
 
     def initialize(hash)
       hash.each do |field, value|
-        set_field(field, value)
+        update_field(field, value)
       end
     end
 
@@ -146,7 +146,7 @@ module ActiveRecord
     end
 
     def create
-      set_field(
+      update_field(
         self.class.primary_field,
         self.class.adapter.create(fields.to_h),
       )
@@ -190,10 +190,10 @@ module ActiveRecord
       @fields ||= Fields.new
     end
 
-    private def set_field(field, value)
+    private def update_field(field, value)
       return unless self.class.fields.includes?(field)
       fields[self.class.field_types[field]]
-                       .set_field(field, value)
+                       .update_field(field, value)
     end
 
     def self.null_value

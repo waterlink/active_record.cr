@@ -7,7 +7,7 @@ module ActiveRecord
         @fields = {} of ::String => V
       end
 
-      def set_field(name, value)
+      def update_field(name, value)
         if value.is_a?(T)
           fields[name] = value
         end
