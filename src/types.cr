@@ -13,6 +13,10 @@ macro active_record_define_not_null_for(type, name)
         ::raise ActiveRecord::NullCheckFailed.new("It is {{name.id}}::Null")
       end
 
+      def inspect
+        "Null(#{{{type.id.stringify}}})"
+      end
+
       def null?
         true
       end
@@ -30,10 +34,6 @@ struct Int
 
     def to_s(io)
       io << ""
-    end
-
-    def inspect
-      "Null(Int)"
     end
 
     macro method_missing(name, args, block)
@@ -70,10 +70,6 @@ class String
       other == self
     end
 
-    def inspect
-      "Null(String)"
-    end
-
     macro method_missing(name, args, block)
       "".{{name.id}}({{args.argify}}) {{block}}
     end
@@ -90,10 +86,6 @@ struct Time
 
     def to_s(io)
       io << ""
-    end
-
-    def inspect
-      "Null(Time)"
     end
 
     macro method_missing(name, args, block)
@@ -128,10 +120,6 @@ struct Bool
 
     def ==(other)
       false
-    end
-
-    def inspect
-      "Null(Bool)"
     end
 
     macro method_missing(name, args, block)
