@@ -1,64 +1,24 @@
 module ActiveRecord
   class Model::Fields
-    class Int
+    class Generic(T, V)
       getter fields
 
       def initialize
-        @fields = {} of ::String => IntTypes
+        @fields = {} of ::String => V
       end
 
       def set_field(name, value)
-        if value.is_a?(::Int)
+        if value.is_a?(T)
           fields[name] = value
         end
         value
       end
     end
 
-    class String
-      getter fields
-
-      def initialize
-        @fields = {} of ::String => ::String
-      end
-
-      def set_field(name, value)
-        if value.is_a?(::String)
-          fields[name] = value
-        end
-        value
-      end
-    end
-
-    class Time
-      getter fields
-
-      def initialize
-        @fields = {} of ::String => ::Time
-      end
-
-      def set_field(name, value)
-        if value.is_a?(::Time)
-          fields[name] = value
-        end
-        value
-      end
-    end
-
-    class Bool
-      getter fields
-
-      def initialize
-        @fields = {} of ::String => ::Bool
-      end
-
-      def set_field(name, value)
-        if value.is_a?(::Bool)
-          fields[name] = value
-        end
-        value
-      end
-    end
+    alias Int = Generic(IntTypes, IntTypes)
+    alias String = Generic(::String, StringTypes)
+    alias Time = Generic(::Time, TimeTypes)
+    alias Bool = Generic(::Bool, BoolTypes)
 
     private getter typed_fields
 
