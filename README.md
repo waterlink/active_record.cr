@@ -21,7 +21,7 @@ Don't confuse with Ruby's activerecord: aim of this is to be true to OO techniqu
 - [x] Populate this list further by making some simple app on top of it
 - [x] Describe in readme how to implement your own adapter
 - [ ] Add transaction features
-- [ ] Implement `postgres` driver and adapter and set it to default
+- [x] Implement `postgres` driver
 - [ ] Implement `sqlite` driver and adapter
 - [ ] Support more types (currently only `Int | String` are supported)
   - [x] `Time`
@@ -38,10 +38,23 @@ dependencies:
     version: 0.1.2
 ```
 
+Additionally you would need to choose your database driver adapter. For
+example, if you want to use `waterlink/postgres_adapter.cr`, then you would add
+this dependency:
+
+```yaml
+  postgres_adapter:
+    github: waterlink/postgres_adapter.cr
+```
+
+See [list of known adapters](#known-database-adapters).
+
 ## Usage
 
 ```crystal
 require "active_record"
+# And require your chosen database adapter:
+require "postgres_adapter"
 ```
 
 ### Define your model
@@ -49,8 +62,8 @@ require "active_record"
 ```crystal
 class Person < ActiveRecord::Model
 
-  # Set adapter, defaults to mysql (subject to change to postgres)
-  # adapter sqlite
+  # Set adapter to your chosen adapter name
+  adapter postgres
 
   # Set table name, defaults to "#{lowercase_name}s"
   # table_name people
