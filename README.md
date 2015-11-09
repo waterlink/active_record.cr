@@ -25,7 +25,7 @@ Don't confuse with Ruby's activerecord: aim of this is to be true to OO techniqu
 - [ ] Implement `sqlite` driver and adapter
 - [ ] Support more types (currently only `Int | String` are supported)
   - [x] `Time`
-  - [ ] `Bool`
+  - [x] `Bool`
 
 ## Installation
 
@@ -35,7 +35,7 @@ Add it to `shard.yml`:
 dependencies:
   active_record:
     github: waterlink/active_record.cr
-    version: 0.1.1
+    version: 0.1.2
 ```
 
 ## Usage
