@@ -50,6 +50,7 @@ class Person < ActiveRecord::Model
   field last_name :: String
   field first_name :: String
   field number_of_dependents :: Int
+  field special_tax_group :: Bool
 
   def get_tax_exemption
     return 0.0 if number_of_dependents < 2
@@ -111,15 +112,21 @@ class AnotherExampleModel < ActiveRecord::Model
 end
 
 def new_person
-  Person.new({"first_name"           => "john",
+  Person.new({
+    "first_name"           => "john",
     "last_name"            => "smith",
-    "number_of_dependents" => 3})
+    "number_of_dependents" => 3,
+    "special_tax_group"    => true,
+  })
 end
 
 def new_other_person
-  Person.new({"first_name"           => "james",
+  Person.new({
+    "first_name"           => "james",
     "last_name"            => "blake",
-    "number_of_dependents" => 1})
+    "number_of_dependents" => 1,
+    "special_tax_group"    => false,
+  })
 end
 
 def new_ghost_person
@@ -149,7 +156,7 @@ module ActiveRecord
 
     describe ".fields" do
       it "returns fields defined on model" do
-        Person.fields.should eq(["id", "last_name", "first_name", "number_of_dependents"])
+        Person.fields.should eq(["id", "last_name", "first_name", "number_of_dependents", "special_tax_group"])
         Another::Model.fields.should eq(["id", "name"])
       end
     end
@@ -236,6 +243,13 @@ module ActiveRecord
           "content"    => "Lots of content here" * 100,
           "created_at" => now})
         Post.get(post.id).authored_at.to_utc.to_s.should eq(now.to_utc.to_s)
+      end
+
+      it "works correctly with Bool fields" do
+        p1 = new_person.create
+        p2 = new_other_person.create
+        Person.get(p1.id).special_tax_group.should eq(true)
+        Person.get(p2.id).special_tax_group.should eq(false)
       end
     end
 

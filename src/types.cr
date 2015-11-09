@@ -13,6 +13,10 @@ macro active_record_define_not_null_for(type, name)
         ::raise ActiveRecord::NullCheckFailed.new("It is {{name.id}}::Null")
       end
 
+      def inspect
+        "Null(#{{{type.id.stringify}}})"
+      end
+
       def null?
         true
       end
@@ -66,10 +70,6 @@ class String
       other == self
     end
 
-    def inspect
-      "Null(String)"
-    end
-
     macro method_missing(name, args, block)
       "".{{name.id}}({{args.argify}}) {{block}}
     end
@@ -100,6 +100,34 @@ struct Time
   end
 end
 
+struct Bool
+  def self.null_class
+    Null
+  end
+
+  def ==(other : Null)
+    false
+  end
+
+  struct Null
+    def to_s(io)
+      io << ""
+    end
+
+    def ==(other : self)
+      true
+    end
+
+    def ==(other)
+      false
+    end
+
+    macro method_missing(name, args, block)
+      false.{{name.id}}({{args.argify}}) {{block}}
+    end
+  end
+end
+
 active_record_define_not_null_for(:struct, Int)
 
 active_record_define_not_null_for(:struct, Int8)
@@ -115,13 +143,16 @@ active_record_define_not_null_for(:class, String)
 
 active_record_define_not_null_for(:struct, Time)
 
+active_record_define_not_null_for(:struct, Bool)
+
 module ActiveRecord
   alias IntTypes = Int8 | UInt8 | Int16 | UInt16 | Int32 | UInt32 | Int64 | UInt64 | Int::Null
   alias StringTypes = String | String::Null
   alias TimeTypes = Time | Time::Null
-  alias SupportedTypeWithoutString = Int8 | UInt8 | Int16 | UInt16 | Int32 | UInt32 | Int64 | UInt64 | Int::Null | Time | Time::Null
+  alias SupportedTypeWithoutString = Int8 | UInt8 | Int16 | UInt16 | Int32 | UInt32 | Int64 | UInt64 | Int::Null | Time | Time::Null | Bool | Bool::Null
+  alias BoolTypes = Bool | Bool::Null
   alias SupportedType = StringTypes | SupportedTypeWithoutString
-  alias NonNullType = String | Int8 | Int32 | Int16 | Int64 | UInt8 | UInt32 | UInt16 | UInt64 | Time
+  alias NonNullType = String | Int8 | Int32 | Int16 | Int64 | UInt8 | UInt32 | UInt16 | UInt64 | Time | Bool
 
   class NullCheckFailed < Exception; end
 end
