@@ -26,6 +26,8 @@ Don't confuse with Ruby's activerecord: aim of this is to be true to OO techniqu
 - [ ] Support more types (currently only `Int | String` are supported)
   - [x] `Time`
   - [x] `Bool`
+  - [ ] Arbitrary type that supports specific interface
+- [ ] Support joins
 
 ## Installation
 
@@ -189,6 +191,32 @@ Supported comparison operators: `== != > >= < <=`
 Supported logic operators: `or | and & xor ^ not !`
 
 Supported is operators: `is_true is_not_true is_false is_not_false is_unknown is_not_unknown is_null is_not_null`
+
+### Joins (TODO)
+
+*This is still not implemented.*
+
+```crystal
+class User < ActiveRecord::Model
+  has_many Post, criteria("posts.author_id") == criteria("users.id")
+  # ...
+end
+
+class Post < ActiveRecord::Model
+  belongs_to User, criteria("posts.author_id") == criteria("users.id")
+  # ...
+end
+
+# makes only one join query
+posts = Post.join(User).all
+posts.first.title      # => "Hello world post"
+posts.first.user.name  # => "John Smith"
+
+# makes 2 queries - 'select from users' and 'select from posts'
+user = User.all.first
+user.posts.first.title  # => "Hello world post"
+user.posts[1].title     # => "Yet another post"
+```
 
 ## Known database adapters
 
