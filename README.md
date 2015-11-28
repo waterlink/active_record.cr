@@ -222,6 +222,7 @@ user.posts[1].title     # => "Yet another post"
 
 - [mysql_adapter.cr](https://github.com/waterlink/mysql_adapter.cr) [![Build Status](https://travis-ci.org/waterlink/mysql_adapter.cr.svg?branch=master)](https://travis-ci.org/waterlink/mysql_adapter.cr)
 - [postgres_adapter.cr](https://github.com/waterlink/postgres_adapter.cr) [![Build Status](https://travis-ci.org/waterlink/postgres_adapter.cr.svg?branch=master)](https://travis-ci.org/waterlink/postgres_adapter.cr)
+- [sqlite_adapter.cr](https://github.com/trapped/sqlite_adapter.cr) [![Build Status](https://travis-ci.org/trapped/sqlite_adapter.cr.svg?branch=master)](https://travis-ci.org/trapped/sqlite_adapter.cr)
 
 ## Development
 
