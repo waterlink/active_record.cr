@@ -1,13 +1,12 @@
 module ActiveRecord
   # Model::Fields represents collection of typed fields for model instance
   class Model::Fields
-    # Generic(T, V) represents collection of fields of type T with
-    # corresponding active record types V
-    class Generic(T, V)
+    # Generic(T) represents collection of fields of type T
+    class Generic(T)
       getter fields
 
       def initialize
-        @fields = {} of ::String => V
+        @fields = {} of ::String => T
       end
 
       def set_field(name, value)
@@ -18,27 +17,14 @@ module ActiveRecord
       end
     end
 
-    # Int is the collection of integer fields
-    alias Int = Generic(IntTypes, IntTypes)
-
-    # String is the collection of string fields
-    alias String = Generic(::String, StringTypes)
-
-    # TIme is the collection of datetime fields
-    alias Time = Generic(::Time, TimeTypes)
-
-    # Bool is the collection of boolean fields
-    alias Bool = Generic(::Bool, BoolTypes)
+    {% for group in TYPE_GROUPS %}
+      alias {{group.id}} = Generic({{group.id}}Types)
+    {% end %}
 
     private getter typed_fields
 
     def initialize
-      @typed_fields = {
-        "Int"    => Int.new,
-        "String" => String.new,
-        "Time"   => Time.new,
-        "Bool"   => Bool.new,
-      }
+      @typed_fields = init_typed_fields
     end
 
     # [] is for accessing fields collection of specific type
@@ -59,4 +45,12 @@ module ActiveRecord
       hash
     end
   end
+end
+
+private macro init_typed_fields
+  {
+    {% for group in TYPE_GROUPS %}
+      {{group.id.stringify}} => {{group.id}}.new,
+    {% end %}
+  }
 end

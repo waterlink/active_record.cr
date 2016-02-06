@@ -1,158 +1,131 @@
-macro active_record_define_not_null_for(type, name)
-  {{type.id}} {{name.id}}
-    def not_null! : {{name}}
-      self as {{name}}
-    end
+module ActiveRecord
+  SPEC_TYPES = [] of Int32
+  TYPE_GROUPS = [] of Int32
 
-    def null?
-      false
-    end
+  macro alias_types(group, special=false, as=nil)
+    {% as = "#{group.id}Types".id unless as %}
+    {% TYPE_GROUPS << group unless special %}
 
-    {{type.id}} Null
-      def not_null! : NoReturn
-        ::raise ActiveRecord::NullCheckFailed.new("It is {{name.id}}::Null")
-      end
+    alias {{as.id}} =
+      {% for x in SPEC_TYPES %}
+        {% if x[0].id == group.id %}
+          {% SPEC_TYPES << {"*Supported*", x[1].id} unless special %}
+          {% SPEC_TYPES << {"*NonNull*", x[1].id} unless special %}
+          {{x[1].id}} |
+        {% end %}
+      {% end %}
 
-      def inspect
-        "Null(#{{{type.id.stringify}}})"
+      {% if special %}
+        NoReturn
+      {% else %}
+        {% SPEC_TYPES << {"*Supported*", "#{group.id}::Null"} %}
+        {{group.id}}::Null
+      {% end %}
+  end
+
+  macro register_type(type, group, name, register=true)
+    {% ActiveRecord::SPEC_TYPES << {group, name} if register == true %}
+
+    {{type.id}} {{name.id}}
+      def not_null! : {{name}}
+        self as {{name}}
       end
 
       def null?
-        true
+        false
       end
+
+      {{type.id}} Null
+        def not_null! : NoReturn
+          ::raise ActiveRecord::NullCheckFailed.new("It is {{name.id}}::Null")
+        end
+
+        def inspect
+          "Null(#{{{type.id.stringify}}})"
+        end
+
+        def null?
+          true
+        end
+      {{:end.id}}
     {{:end.id}}
-  {{:end.id}}
-end
-
-struct Int
-  def self.null_class
-    Null
   end
 
-  struct Null
-    include Comparable(Int)
+  macro register_type_group(kind, ty, default=nil, comparable=false, to_s="")
+    {{kind.id}} {{ty.id}}
+      def self.null_class
+        Null
+      end
 
-    def to_s(io)
-      io << ""
-    end
+      def ==(other : Null)
+        self == {{default}}
+      end
 
-    macro method_missing(name, args, block)
-      0.{{name.id}}({{args.argify}}) {{block}}
-    end
-  end
+      {{kind.id}} Null
+        {% if comparable %}include Comparable({{ty.id}}){% end %}
 
-  include Comparable(Null)
+        def to_s(io)
+          io << {{to_s}}
+        end
 
-  def <=>(other : Null)
-    self <=> 0
-  end
-end
+        def ==(other : self)
+          true
+        end
 
-class String
-  def self.null_class
-    Null
-  end
+        def ==(other)
+          {{default}} == other
+        end
 
-  def ==(other : Null)
-    self == ""
-  end
+        macro method_missing(name, args, block)
+          {{default}}.\{{name.id}}(\{{args.argify}}) \{{block}}
+        end
+      {{:end.id}}
 
-  class Null
-    def to_s(io)
-      io << ""
-    end
+      {% if comparable %}
+        include Comparable({{ty.id}})
 
-    def ==(other : self)
-      true
-    end
-
-    def ==(other : String)
-      other == self
-    end
-
-    macro method_missing(name, args, block)
-      "".{{name.id}}({{args.argify}}) {{block}}
-    end
+        def <=>(other : Null)
+          self <=> {{default}}
+        end
+      {% end %}
+    {{:end.id}}
   end
 end
 
-struct Time
-  def self.null_class
-    Null
-  end
+ActiveRecord.register_type_group :struct, Int, default: 0, comparable: true
+ActiveRecord.register_type(:struct, Int, Int, register: false)
+ActiveRecord.register_type(:struct, Int, Int8)
+ActiveRecord.register_type(:struct, Int, UInt8)
+ActiveRecord.register_type(:struct, Int, Int16)
+ActiveRecord.register_type(:struct, Int, UInt16)
+ActiveRecord.register_type(:struct, Int, Int32)
+ActiveRecord.register_type(:struct, Int, UInt32)
+ActiveRecord.register_type(:struct, Int, Int64)
+ActiveRecord.register_type(:struct, Int, UInt64)
 
-  struct Null
-    include Comparable(Time)
+ActiveRecord.register_type_group :class, String, default: ""
+ActiveRecord.register_type(:class, String, String)
 
-    def to_s(io)
-      io << ""
-    end
+ActiveRecord.register_type_group :struct, Time, default: Time.new(0), comparable: true
+ActiveRecord.register_type(:struct, Time, Time)
 
-    macro method_missing(name, args, block)
-      Time.new(0).{{name.id}}({{args.argify}}) {{block}}
-    end
-  end
+ActiveRecord.register_type_group :struct, Bool, default: false
+ActiveRecord.register_type(:struct, Bool, Bool)
 
-  include Comparable(Null)
-
-  def <=>(other : Null)
-    self <=> Time.new(0)
-  end
-end
-
-struct Bool
-  def self.null_class
-    Null
-  end
-
-  def ==(other : Null)
-    false
-  end
-
-  struct Null
-    def to_s(io)
-      io << ""
-    end
-
-    def ==(other : self)
-      true
-    end
-
-    def ==(other)
-      false
-    end
-
-    macro method_missing(name, args, block)
-      false.{{name.id}}({{args.argify}}) {{block}}
-    end
-  end
-end
-
-active_record_define_not_null_for(:struct, Int)
-
-active_record_define_not_null_for(:struct, Int8)
-active_record_define_not_null_for(:struct, UInt8)
-active_record_define_not_null_for(:struct, Int16)
-active_record_define_not_null_for(:struct, UInt16)
-active_record_define_not_null_for(:struct, Int32)
-active_record_define_not_null_for(:struct, UInt32)
-active_record_define_not_null_for(:struct, Int64)
-active_record_define_not_null_for(:struct, UInt64)
-
-active_record_define_not_null_for(:class, String)
-
-active_record_define_not_null_for(:struct, Time)
-
-active_record_define_not_null_for(:struct, Bool)
+ActiveRecord.register_type_group :struct, Float, default: 0.0, comparable: true
+ActiveRecord.register_type(:struct, Float, Float, register: false)
+ActiveRecord.register_type(:struct, Float, Float32)
+ActiveRecord.register_type(:struct, Float, Float64)
 
 module ActiveRecord
-  alias IntTypes = Int8 | UInt8 | Int16 | UInt16 | Int32 | UInt32 | Int64 | UInt64 | Int::Null
-  alias StringTypes = String | String::Null
-  alias TimeTypes = Time | Time::Null
-  alias SupportedTypeWithoutString = Int8 | UInt8 | Int16 | UInt16 | Int32 | UInt32 | Int64 | UInt64 | Int::Null | Time | Time::Null | Bool | Bool::Null
-  alias BoolTypes = Bool | Bool::Null
-  alias SupportedType = StringTypes | SupportedTypeWithoutString
-  alias NonNullType = String | Int8 | Int32 | Int16 | Int64 | UInt8 | UInt32 | UInt16 | UInt64 | Time | Bool
+  alias_types Int
+  alias_types String
+  alias_types Time
+  alias_types Bool
+  alias_types Float
+
+  alias_types "*Supported*", true, SupportedType
+  alias_types "*NonNull*", true, NonNullType
 
   class NullCheckFailed < Exception; end
 end
