@@ -1,5 +1,29 @@
 module ActiveRecord
-  macro define_not_null_for(type, name)
+  SPEC_TYPES = [] of Int32
+
+  macro alias_types(group, special=false, as=nil)
+    {% as = "#{group.id}Types".id unless as %}
+
+    alias {{as.id}} =
+      {% for x in SPEC_TYPES %}
+        {% if x[0].id == group.id %}
+          {% SPEC_TYPES << {"*Supported*", x[1].id} unless special %}
+          {% SPEC_TYPES << {"*NonNull*", x[1].id} unless special %}
+          {{x[1].id}} |
+        {% end %}
+      {% end %}
+
+      {% if special %}
+        NoReturn
+      {% else %}
+        {% SPEC_TYPES << {"*Supported*", "#{group.id}::Null"} %}
+        {{group.id}}::Null
+      {% end %}
+  end
+
+  macro define_not_null_for(type, group, name, register=true)
+    {% ActiveRecord::SPEC_TYPES << {group, name} if register == true %}
+
     {{type.id}} {{name.id}}
       def not_null! : {{name}}
         self as {{name}}
@@ -67,33 +91,33 @@ module ActiveRecord
 end
 
 ActiveRecord.register_type :struct, Int, default: 0, comparable: true
-ActiveRecord.define_not_null_for(:struct, Int)
-ActiveRecord.define_not_null_for(:struct, Int8)
-ActiveRecord.define_not_null_for(:struct, UInt8)
-ActiveRecord.define_not_null_for(:struct, Int16)
-ActiveRecord.define_not_null_for(:struct, UInt16)
-ActiveRecord.define_not_null_for(:struct, Int32)
-ActiveRecord.define_not_null_for(:struct, UInt32)
-ActiveRecord.define_not_null_for(:struct, Int64)
-ActiveRecord.define_not_null_for(:struct, UInt64)
+ActiveRecord.define_not_null_for(:struct, Int, Int, register=false)
+ActiveRecord.define_not_null_for(:struct, Int, Int8)
+ActiveRecord.define_not_null_for(:struct, Int, UInt8)
+ActiveRecord.define_not_null_for(:struct, Int, Int16)
+ActiveRecord.define_not_null_for(:struct, Int, UInt16)
+ActiveRecord.define_not_null_for(:struct, Int, Int32)
+ActiveRecord.define_not_null_for(:struct, Int, UInt32)
+ActiveRecord.define_not_null_for(:struct, Int, Int64)
+ActiveRecord.define_not_null_for(:struct, Int, UInt64)
 
 ActiveRecord.register_type :class, String, default: ""
-ActiveRecord.define_not_null_for(:class, String)
+ActiveRecord.define_not_null_for(:class, String, String)
 
 ActiveRecord.register_type :struct, Time, default: Time.new(0), comparable: true
-ActiveRecord.define_not_null_for(:struct, Time)
+ActiveRecord.define_not_null_for(:struct, Time, Time)
 
 ActiveRecord.register_type :struct, Bool, default: false
-ActiveRecord.define_not_null_for(:struct, Bool)
+ActiveRecord.define_not_null_for(:struct, Bool, Bool)
 
 module ActiveRecord
-  alias IntTypes = Int8 | UInt8 | Int16 | UInt16 | Int32 | UInt32 | Int64 | UInt64 | Int::Null
-  alias StringTypes = String | String::Null
-  alias TimeTypes = Time | Time::Null
-  alias SupportedTypeWithoutString = Int8 | UInt8 | Int16 | UInt16 | Int32 | UInt32 | Int64 | UInt64 | Int::Null | Time | Time::Null | Bool | Bool::Null
-  alias BoolTypes = Bool | Bool::Null
-  alias SupportedType = StringTypes | SupportedTypeWithoutString
-  alias NonNullType = String | Int8 | Int32 | Int16 | Int64 | UInt8 | UInt32 | UInt16 | UInt64 | Time | Bool
+  alias_types Int
+  alias_types String
+  alias_types Time
+  alias_types Bool
+
+  alias_types "*Supported*", true, SupportedType
+  alias_types "*NonNull*", true, NonNullType
 
   class NullCheckFailed < Exception; end
 end
