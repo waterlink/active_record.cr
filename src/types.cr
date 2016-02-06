@@ -93,7 +93,7 @@ module ActiveRecord
 end
 
 ActiveRecord.register_type :struct, Int, default: 0, comparable: true
-ActiveRecord.define_not_null_for(:struct, Int, Int, register=false)
+ActiveRecord.define_not_null_for(:struct, Int, Int, register: false)
 ActiveRecord.define_not_null_for(:struct, Int, Int8)
 ActiveRecord.define_not_null_for(:struct, Int, UInt8)
 ActiveRecord.define_not_null_for(:struct, Int, Int16)
