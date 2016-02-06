@@ -19,7 +19,10 @@ module ActiveRecord
   abstract class Adapter
     extend AdapterHelper
 
-    abstract def self.build(table_name, primary_field, fields, register = true)
+    def self.build(table_name, primary_field, fields, register = true)
+      raise "ActiveRecord::Adapter requires 'self.build(table_name, primary_field, fields, register = true)' to be implemented"
+    end
+
     abstract def create(fields)
     abstract def get(id)
     abstract def all
