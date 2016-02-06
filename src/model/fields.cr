@@ -17,27 +17,14 @@ module ActiveRecord
       end
     end
 
-    # Int is the collection of integer fields
-    alias Int = Generic(IntTypes)
-
-    # String is the collection of string fields
-    alias String = Generic(StringTypes)
-
-    # Time is the collection of datetime fields
-    alias Time = Generic(TimeTypes)
-
-    # Bool is the collection of boolean fields
-    alias Bool = Generic(BoolTypes)
+    {% for group in TYPE_GROUPS %}
+      alias {{group.id}} = Generic({{group.id}}Types)
+    {% end %}
 
     private getter typed_fields
 
     def initialize
-      @typed_fields = {
-        "Int"    => Int.new,
-        "String" => String.new,
-        "Time"   => Time.new,
-        "Bool"   => Bool.new,
-      }
+      @typed_fields = init_typed_fields
     end
 
     # [] is for accessing fields collection of specific type
@@ -58,4 +45,12 @@ module ActiveRecord
       hash
     end
   end
+end
+
+private macro init_typed_fields
+  {
+    {% for group in TYPE_GROUPS %}
+      {{group.id.stringify}} => {{group.id}}.new,
+    {% end %}
+  }
 end

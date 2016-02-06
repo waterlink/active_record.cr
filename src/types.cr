@@ -1,8 +1,10 @@
 module ActiveRecord
   SPEC_TYPES = [] of Int32
+  TYPE_GROUPS = [] of Int32
 
   macro alias_types(group, special=false, as=nil)
     {% as = "#{group.id}Types".id unless as %}
+    {% TYPE_GROUPS << group unless special %}
 
     alias {{as.id}} =
       {% for x in SPEC_TYPES %}
