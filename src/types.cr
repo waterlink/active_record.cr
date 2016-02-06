@@ -119,7 +119,7 @@ struct Bool
     end
 
     def ==(other)
-      false
+      false == other
     end
 
     macro method_missing(name, args, block)
