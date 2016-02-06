@@ -140,5 +140,14 @@ module ActiveRecord
       test_non_null Bool, true, false, x, !x == false
       test_null Bool, false, true
     end
+
+    describe Float do
+      test_non_null Float32, 2.5_f32, 0.0, x, x + 5 == 7.5
+      test_non_null Float64, 2.5_f64, 0.0, x, x + 5 == 7.5
+
+      test_null Float, 0.0, 2.5_f32, x, x + 5 == 5.0
+
+      test_comparable Float, Float32, 2.5_f32, 0
+    end
   end
 end

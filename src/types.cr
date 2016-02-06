@@ -112,11 +112,17 @@ ActiveRecord.define_not_null_for(:struct, Time, Time)
 ActiveRecord.register_type :struct, Bool, default: false
 ActiveRecord.define_not_null_for(:struct, Bool, Bool)
 
+ActiveRecord.register_type :struct, Float, default: 0.0, comparable: true
+ActiveRecord.define_not_null_for(:struct, Float, Float, register: false)
+ActiveRecord.define_not_null_for(:struct, Float, Float32)
+ActiveRecord.define_not_null_for(:struct, Float, Float64)
+
 module ActiveRecord
   alias_types Int
   alias_types String
   alias_types Time
   alias_types Bool
+  alias_types Float
 
   alias_types "*Supported*", true, SupportedType
   alias_types "*NonNull*", true, NonNullType
