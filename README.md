@@ -22,7 +22,6 @@ Don't confuse with Ruby's activerecord: aim of this is to be true to OO techniqu
 - [x] Describe in readme how to implement your own adapter
 - [ ] Add transaction features
 - [x] Implement `postgres` driver
-- [ ] Implement `sqlite` driver and adapter
 - [ ] Support more types (currently only `Int | String` are supported)
   - [x] `Time`
   - [x] `Bool`
@@ -37,7 +36,7 @@ Add it to `shard.yml`:
 dependencies:
   active_record:
     github: waterlink/active_record.cr
-    version: 0.1.2
+    version: 0.1.3
 ```
 
 Additionally you would need to choose your database driver adapter. For
