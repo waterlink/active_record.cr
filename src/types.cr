@@ -23,7 +23,7 @@ module ActiveRecord
       {% end %}
   end
 
-  macro define_not_null_for(type, group, name, register=true)
+  macro register_type(type, group, name, register=true)
     {% ActiveRecord::SPEC_TYPES << {group, name} if register == true %}
 
     {{type.id}} {{name.id}}
@@ -51,7 +51,7 @@ module ActiveRecord
     {{:end.id}}
   end
 
-  macro register_type(kind, ty, default=nil, comparable=false, to_s="")
+  macro register_type_group(kind, ty, default=nil, comparable=false, to_s="")
     {{kind.id}} {{ty.id}}
       def self.null_class
         Null
@@ -92,30 +92,30 @@ module ActiveRecord
   end
 end
 
-ActiveRecord.register_type :struct, Int, default: 0, comparable: true
-ActiveRecord.define_not_null_for(:struct, Int, Int, register: false)
-ActiveRecord.define_not_null_for(:struct, Int, Int8)
-ActiveRecord.define_not_null_for(:struct, Int, UInt8)
-ActiveRecord.define_not_null_for(:struct, Int, Int16)
-ActiveRecord.define_not_null_for(:struct, Int, UInt16)
-ActiveRecord.define_not_null_for(:struct, Int, Int32)
-ActiveRecord.define_not_null_for(:struct, Int, UInt32)
-ActiveRecord.define_not_null_for(:struct, Int, Int64)
-ActiveRecord.define_not_null_for(:struct, Int, UInt64)
+ActiveRecord.register_type_group :struct, Int, default: 0, comparable: true
+ActiveRecord.register_type(:struct, Int, Int, register: false)
+ActiveRecord.register_type(:struct, Int, Int8)
+ActiveRecord.register_type(:struct, Int, UInt8)
+ActiveRecord.register_type(:struct, Int, Int16)
+ActiveRecord.register_type(:struct, Int, UInt16)
+ActiveRecord.register_type(:struct, Int, Int32)
+ActiveRecord.register_type(:struct, Int, UInt32)
+ActiveRecord.register_type(:struct, Int, Int64)
+ActiveRecord.register_type(:struct, Int, UInt64)
 
-ActiveRecord.register_type :class, String, default: ""
-ActiveRecord.define_not_null_for(:class, String, String)
+ActiveRecord.register_type_group :class, String, default: ""
+ActiveRecord.register_type(:class, String, String)
 
-ActiveRecord.register_type :struct, Time, default: Time.new(0), comparable: true
-ActiveRecord.define_not_null_for(:struct, Time, Time)
+ActiveRecord.register_type_group :struct, Time, default: Time.new(0), comparable: true
+ActiveRecord.register_type(:struct, Time, Time)
 
-ActiveRecord.register_type :struct, Bool, default: false
-ActiveRecord.define_not_null_for(:struct, Bool, Bool)
+ActiveRecord.register_type_group :struct, Bool, default: false
+ActiveRecord.register_type(:struct, Bool, Bool)
 
-ActiveRecord.register_type :struct, Float, default: 0.0, comparable: true
-ActiveRecord.define_not_null_for(:struct, Float, Float, register: false)
-ActiveRecord.define_not_null_for(:struct, Float, Float32)
-ActiveRecord.define_not_null_for(:struct, Float, Float64)
+ActiveRecord.register_type_group :struct, Float, default: 0.0, comparable: true
+ActiveRecord.register_type(:struct, Float, Float, register: false)
+ActiveRecord.register_type(:struct, Float, Float32)
+ActiveRecord.register_type(:struct, Float, Float64)
 
 module ActiveRecord
   alias_types Int
