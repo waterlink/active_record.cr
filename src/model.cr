@@ -1,6 +1,8 @@
 require "./criteria_helper"
 require "./support"
 
+require "pool/connection"
+
 class ActiveRecord::Model; end
 
 require "./model/fields"
@@ -14,6 +16,9 @@ module ActiveRecord
     extend CriteriaHelper
 
     MACRO_CURRENT = [] of String
+
+    DEFAULT_CONNECTION_POOL_CAPACITY = 1
+    DEFAULT_CONNECTION_POOL_TIMEOUT = 2.0
 
     macro null_object(name_and_super, &block)
       class {{name_and_super.receiver}} < {{name_and_super.args[0]}}
@@ -95,12 +100,22 @@ module ActiveRecord
       @@field_types ||= {} of String => String
     end
 
+    def self.connection_pool_capacity
+      @@connection_pool_capacity ||= DEFAULT_CONNECTION_POOL_CAPACITY
+    end
+
+    def self.connection_pool_timeout
+      @@connection_pool_timeout ||= DEFAULT_CONNECTION_POOL_TIMEOUT
+    end
+
     protected def self.primary_field
       @@primary_field
     end
 
-    protected def self.adapter
-      @@adapter ||= Registry.adapter(adapter_name).build(table_name_value, primary_field, fields)
+    protected def self.pool
+      @@pool ||= ConnectionPool(Adapter).new(connection_pool_capacity, connection_pool_timeout) do
+        Registry.adapter(adapter_name).build(table_name_value, primary_field, fields)
+      end
     end
 
     private def self.adapter_name
@@ -134,10 +149,12 @@ module ActiveRecord
     end
 
     def self.get(primary_key)
-      if adapter.get(primary_key)
-        build(adapter.get(primary_key)) as self
-      else
-        raise RecordNotFoundException.new("Record not found with given id.")
+      pool.connection do |adapter|
+        if adapter.get(primary_key)
+          build(adapter.get(primary_key)) as self
+        else
+          raise RecordNotFoundException.new("Record not found with given id.")
+        end
       end
     end
 
@@ -146,11 +163,13 @@ module ActiveRecord
     end
 
     def create
-      set_field(
-        self.class.primary_field,
-        self.class.adapter.create(fields.to_h),
-      )
-      self
+      self.class.pool.connection do |adapter|
+        set_field(
+          self.class.primary_field,
+          adapter.create(fields.to_h),
+        )
+        self
+      end
     end
 
     def self.create(hash)
@@ -163,27 +182,37 @@ module ActiveRecord
 
     macro query_level(level)
       {{level.id}} def self.where(query_hash)
-        adapter.where(query_hash).map { |fields| new(fields) }
+        pool.connection do |adapter|
+          adapter.where(query_hash).map { |fields| new(fields) }
+        end
       end
 
       {{level.id}} def self.where(query, params)
-        adapter.where(query, params).map { |fields| new(fields) }
+        pool.connection do |adapter|
+          adapter.where(query, params).map { |fields| new(fields) }
+        end
       end
 
       {{level.id}} def self.all
-        adapter.all.map { |fields| new(fields) }
+        pool.connection do |adapter|
+          adapter.all.map { |fields| new(fields) }
+        end
       end
     end
 
     query_level ""
 
     def update
-      self.class.adapter.update(primary_key, fields.to_h)
-      self
+      self.class.pool.connection do |adapter|
+        adapter.update(primary_key, fields.to_h)
+        self
+      end
     end
 
     def delete
-      self.class.adapter.delete(primary_key)
+      self.class.pool.connection do |adapter|
+        adapter.delete(primary_key)
+      end
     end
 
     protected def fields

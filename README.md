@@ -191,6 +191,19 @@ Supported logic operators: `or | and & xor ^ not !`
 
 Supported is operators: `is_true is_not_true is_false is_not_false is_unknown is_not_unknown is_null is_not_null`
 
+### Connection Pool configuration (Experimental)
+
+Each distinct model class has its own associated connection pool. By default,
+pool capacity is 1 and timeout is 2 seconds. These settings can be changed on
+per model basis:
+
+```crystal
+class Person < ActiveRecord::Model
+  @@connection_pool_capacity = 25
+  @@connection_pool_timeout = 0.03  # seconds
+end
+```
+
 ### Joins (TODO)
 
 *This is still not implemented.*
