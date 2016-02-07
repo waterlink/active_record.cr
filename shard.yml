@@ -6,6 +6,11 @@ authors:
 
 license: MIT
 
+dependencies:
+  pool:
+    github: ysbaddaden/pool
+    version: 0.2.1
+
 development_dependencies:
   mocks:
     github: waterlink/mocks.cr
