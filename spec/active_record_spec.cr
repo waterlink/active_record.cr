@@ -46,11 +46,11 @@ class Person < ActiveRecord::Model
   adapter null
   table_name people
 
-  primary id :: Int
-  field last_name :: String
-  field first_name :: String
-  field number_of_dependents :: Int
-  field special_tax_group :: Bool
+  primary id : Int
+  field last_name : String
+  field first_name : String
+  field number_of_dependents : Int
+  field special_tax_group : Bool
 
   def get_tax_exemption
     return 0.0 if number_of_dependents < 2
@@ -68,18 +68,18 @@ class Another::Model < ActiveRecord::Model
   adapter null
   table_name something_else
 
-  primary id :: Int
-  field name :: String
+  primary id : Int
+  field name : String
 end
 
 class Post < ActiveRecord::Model
   adapter null
   table_name posts
 
-  primary id :: Int
-  field title :: String
-  field content :: String
-  field created_at :: Time
+  primary id : Int
+  field title : String
+  field content : String
+  field created_at : Time
 
   field_level :protected
 
@@ -99,16 +99,16 @@ end
 class ExampleModel < ActiveRecord::Model
   adapter fake
 
-  primary id :: Int
-  field name :: String
+  primary id : Int
+  field name : String
 end
 
 class AnotherExampleModel < ActiveRecord::Model
   adapter fake
   table_name some_models
 
-  primary id :: Int
-  field name :: String
+  primary id : Int
+  field name : String
 end
 
 def new_person

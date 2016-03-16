@@ -40,9 +40,9 @@ class AModel < ActiveRecord::Model
   adapter null
   table_name a_models
 
-  primary id :: Int
-  field name :: String
-  field other_model_id :: Int
+  primary id : Int
+  field name : String
+  field other_model_id : Int
 
   def self.with_name(name)
     where(criteria("name") == name)

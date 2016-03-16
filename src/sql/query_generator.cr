@@ -12,7 +12,7 @@ module ActiveRecord
       getter query
       getter params
 
-      @params :: Hash(String, ::ActiveRecord::SupportedType)
+      @params : Hash(String, ::ActiveRecord::SupportedType)
 
       def self.[](*args)
         new(*args)
