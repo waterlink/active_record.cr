@@ -1,4 +1,3 @@
-require "./version"
 require "./registry"
 require "./types"
 require "./model"
