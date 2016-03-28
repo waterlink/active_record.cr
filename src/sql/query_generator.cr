@@ -41,7 +41,7 @@ module ActiveRecord
     end
 
     class QueryGenerator < ::ActiveRecord::QueryGenerator
-      alias HandledTypes = ::ActiveRecord::SupportedType | ::ActiveRecord::Query
+      alias HandledTypes = ::ActiveRecord::SupportedType | ::ActiveRecord::QueryObject
 
       class Fail < ArgumentError
       end

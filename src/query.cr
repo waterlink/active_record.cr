@@ -1,5 +1,5 @@
 module ActiveRecord
-  class Query
+  class Query(T)
     include QueryObject
 
     macro alias_operation(new_name, name)
@@ -8,7 +8,7 @@ module ActiveRecord
       end
     end
 
-    def initialize(@expression)
+    def initialize(@expression : T)
     end
 
     def same_query?(other : Query)

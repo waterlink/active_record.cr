@@ -10,6 +10,10 @@ end
 def _specs_reset
   ActiveRecord::NullAdapter.reset
   FakeAdapter._reset
+
+  ifdef !active_record_adapter
+    Mocks.reset
+  end
 end
 
 Spec.before_each do
@@ -28,11 +32,11 @@ class SameQueryExpectation(T)
     ActiveRecord::QueryObject.same_query?(@expected, @actual)
   end
 
-  def failure_message
+  def failure_message(_ignored = nil)
     "expected: #{@expected.inspect}\n     got: #{@actual.inspect}"
   end
 
-  def negative_failure_message
+  def negative_failure_message(_ignored = nil)
     "expected: value != #{@expected.inspect}\n     got: #{@actual.inspect}"
   end
 end

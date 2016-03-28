@@ -11,6 +11,8 @@ module ActiveRecord
     def self.same_query?(left, right)
       left == right
     end
+
+    abstract def expression
   end
 
   class Criteria
@@ -21,6 +23,10 @@ module ActiveRecord
     end
 
     def initialize(@name)
+    end
+
+    def expression
+      self
     end
 
     def ==(other)

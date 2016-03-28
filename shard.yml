@@ -9,7 +9,7 @@ license: MIT
 dependencies:
   pool:
     github: ysbaddaden/pool
-    version: 0.2.1
+    version: ~> 0.2
 
 development_dependencies:
   mocks:
