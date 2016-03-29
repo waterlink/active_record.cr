@@ -191,6 +191,11 @@ Supported logic operators: `or | and & xor ^ not !`
 
 Supported is operators: `is_true is_not_true is_false is_not_false is_unknown is_not_unknown is_null is_not_null`
 
+### Connection configuration
+
+Connection configuration is delegated to the database adapter library. So find
+it in the respective library's documentation. [Known adapters](#known-database-adapters).
+
 ### Connection Pool configuration (Experimental)
 
 Each distinct model class has its own associated connection pool. By default,
