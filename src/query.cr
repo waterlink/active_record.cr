@@ -23,6 +23,10 @@ module ActiveRecord
       binary_op(Or, other)
     end
 
+    def in(other)
+      binary_op(In, other)
+    end
+
     alias_operation :|, :or
 
     def and(other)
@@ -140,6 +144,9 @@ module ActiveRecord
     end
 
     class Xor < GenericExpression
+    end
+
+    class In < GenericExpression
     end
 
     class Not < UnaryExpression

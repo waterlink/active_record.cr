@@ -53,6 +53,10 @@ module ActiveRecord
       binary_op(Query::LessEqual, other)
     end
 
+    def in(other)
+      binary_op(Query::In, other)
+    end
+
     def is_true
       unary_op(Query::IsTrue)
     end

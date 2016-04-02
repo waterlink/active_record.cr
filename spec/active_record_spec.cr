@@ -36,8 +36,22 @@ module ActiveRecord
     end
   end
 
+  class DependentsIn < NullAdapter::Query
+    def call(params, fields)
+      return false unless fields.has_key?("number_of_dependents") &&
+                          params.has_key?("1") && params.has_key?("2")
+      actual = fields["number_of_dependents"] as Int
+      array = [] of Int32
+      array << params["1"] as Int32
+      array << params["2"] as Int32
+      array.includes?(actual)
+    end
+  end
+
   NullAdapter.register_query("(number_of_dependents > :1) AND (number_of_dependents < :2)",
     LessAndMoreDependents.new)
+
+  NullAdapter.register_query("number_of_dependents IN (:1, :2)", DependentsIn.new)
 end
 
 class Example; end
@@ -308,6 +322,19 @@ module ActiveRecord
 
         Person.where((criteria("number_of_dependents") > 1).and(criteria("number_of_dependents") < 3))
               .should eq([p8])
+      end
+
+      it "gets multiple records with an Array" do
+        p1 = new_person.create
+        p2 = new_other_person.create
+        p3 = new_other_person.create
+        p4 = new_person.create
+        p5 = new_person.create
+        p6 = new_person.create
+        p7 = new_other_person.create
+        p8 = Person.create({"last_name" => "maria", "number_of_dependents" => 2})
+
+        Person.where(criteria("number_of_dependents").in([1, 2])).should eq([p2, p3, p7, p8])
       end
     end
 

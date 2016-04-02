@@ -40,6 +40,21 @@ module ActiveRecord
       end
     end
 
+    class ArrayQueryHandler
+      def initialize(&@param_name_transformer : Int32 -> String)
+      end
+
+      def handle(query : Array(T), param_count = 0)
+        params = {} of String => T
+        query = query.map do |value|
+          param_count += 1
+          params[param_count.to_s] = value
+          @param_name_transformer.call(param_count)
+        end.join(", ")
+        {Query.new("(#{query})", params), param_count}
+      end
+    end
+
     class QueryGenerator < ::ActiveRecord::QueryGenerator
       alias HandledTypes = ::ActiveRecord::SupportedType | ::ActiveRecord::QueryObject
 
@@ -92,6 +107,10 @@ module ActiveRecord
         generate_binary_op(query, " OR ", param_count, parenthesis: true)
       end
 
+      def _generate(query : ::ActiveRecord::Query::In, param_count = 0)
+        generate_binary_op(query, " IN ", param_count)
+      end
+
       def _generate(query : ::ActiveRecord::Query::Xor, param_count = 0)
         generate_binary_op(query, " XOR ", param_count, parenthesis: true)
       end
@@ -141,6 +160,11 @@ module ActiveRecord
         Query.new(":#{param_count}", {"#{param_count}" => query})
       end
 
+      def _generate(query : Array(T), param_count = 0)
+        result, param_count = ArrayQueryHandler.new { |name| ":#{name}" }.handle(query)
+        result
+      end
+
       def _generate(query, params_count)
         raise Fail.new
       end
@@ -150,7 +174,6 @@ module ActiveRecord
         param_count += query_a.params.keys.size
 
         query_b = _generate(query.argument, param_count)
-
         query_a.concat_with(separator, query_b, parenthesis)
       end
 
