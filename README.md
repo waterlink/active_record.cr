@@ -36,7 +36,7 @@ Add it to `shard.yml`:
 dependencies:
   active_record:
     github: waterlink/active_record.cr
-    version: 0.4.0
+    version: ~> 0.4
 ```
 
 Additionally you would need to choose your database driver adapter. For
