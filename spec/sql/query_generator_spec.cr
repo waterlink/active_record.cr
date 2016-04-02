@@ -139,21 +139,17 @@ module ActiveRecord
           expected_query = Query["NOT (number < :1)", {"1" => 35}]
           generate(query).should eq(expected_query)
 
-          query = !(criteria("number") < 35)
-          expected_query = Query["NOT (number < :1)", {"1" => 35}]
-          generate(query).should eq(expected_query)
-
-          query = !(criteria("number") < 35).and(criteria("other_person") == 1)
+          query = ((criteria("number") < 35).and(criteria("other_person") == 1)).not
           expected_query = Query["NOT ((number < :1) AND (other_person = :2))",
             {"1" => 35, "2" => 1}]
           generate(query).should eq(expected_query)
 
-          query = (!(criteria("number") < 35)).and(criteria("other_person") == 1)
+          query = (criteria("number") < 35).not.and(criteria("other_person") == 1)
           expected_query = Query["(NOT (number < :1)) AND (other_person = :2)",
             {"1" => 35, "2" => 1}]
           generate(query).should eq(expected_query)
 
-          query = (criteria("number") < 35).and(!(criteria("other_person") == 1))
+          query = (criteria("number") < 35).and((criteria("other_person") == 1).not)
           expected_query = Query["(number < :1) AND (NOT (other_person = :2))",
             {"1" => 35, "2" => 1}]
           generate(query).should eq(expected_query)

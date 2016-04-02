@@ -41,8 +41,6 @@ module ActiveRecord
       unary_op(Not)
     end
 
-    alias_operation :!, :not
-
     def is_true
       unary_op(IsTrue)
     end
