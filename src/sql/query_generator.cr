@@ -93,7 +93,7 @@ module ActiveRecord
       end
 
       def _generate(query : ::ActiveRecord::Query::In, param_count = 0)
-        generate_binary_op(query, " IN ", param_count, parenthesis: true)
+        generate_binary_op(query, " IN ", param_count)
       end
 
       def _generate(query : ::ActiveRecord::Query::Xor, param_count = 0)

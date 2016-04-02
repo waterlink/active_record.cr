@@ -38,21 +38,20 @@ module ActiveRecord
 
   class DependentsIn < NullAdapter::Query
     def call(params, fields)
-      puts params
-      puts fields
       return false unless fields.has_key?("number_of_dependents") &&
-                          params.has_key?("1")
+                          params.has_key?("1") && params.has_key?("2")
       actual = fields["number_of_dependents"] as Int
-      low = params["1"] as Int
-      high = params["2"] as Int
-      actual > low && actual < high
+      array = [] of Int32
+      array << params["1"] as Int32
+      array << params["2"] as Int32
+      array.includes?(actual)
     end
   end
 
   NullAdapter.register_query("(number_of_dependents > :1) AND (number_of_dependents < :2)",
     LessAndMoreDependents.new)
 
-  NullAdapter.register_query("number_of_dependents IN ((:1,:2))", DependentsIn.new)
+  NullAdapter.register_query("number_of_dependents IN (:1, :2)", DependentsIn.new)
 end
 
 class Example; end
