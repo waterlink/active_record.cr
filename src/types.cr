@@ -117,16 +117,12 @@ ActiveRecord.register_type(:struct, Float, Float, register: false)
 ActiveRecord.register_type(:struct, Float, Float32)
 ActiveRecord.register_type(:struct, Float, Float64)
 
-ActiveRecord.register_type_group(:class, Array, default: Array.new, comparable: false)
-ActiveRecord.register_type(:class, Array(T), Array(T))
-
 module ActiveRecord
   alias_types Int
   alias_types String
   alias_types Time
   alias_types Bool
   alias_types Float
-  alias_types Array
 
   alias_types "*Supported*", true, SupportedType
   alias_types "*NonNull*", true, NonNullType

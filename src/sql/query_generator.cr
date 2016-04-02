@@ -57,14 +57,10 @@ module ActiveRecord
       end
 
       def _generate(query : ::ActiveRecord::Query, param_count = 0)
-        puts "In query generate"
-        puts query.to_s
         _generate(query.expression.not_nil!, param_count)
       end
 
       def _generate(query : ::ActiveRecord::Criteria, param_count = 0)
-        puts "In criteria generate"
-        puts query.to_s
         Query.new(query.to_s)
       end
 
@@ -97,9 +93,6 @@ module ActiveRecord
       end
 
       def _generate(query : ::ActiveRecord::Query::In, param_count = 0)
-        puts "IN"
-        puts query.inspect
-        puts param_count
         generate_binary_op(query, " IN ", param_count, parenthesis: true)
       end
 
@@ -152,22 +145,25 @@ module ActiveRecord
         Query.new(":#{param_count}", {"#{param_count}" => query})
       end
 
+      def _generate(query : ::Array(T), param_count = 0)
+        params = {} of String => T
+        query = query.map do |value|
+          param_count += 1
+          params[param_count.to_s] = value
+          ":#{param_count}"
+        end.join(", ")
+        Query.new("(#{query})", params)
+      end
+
       def _generate(query, params_count)
-        puts ::ActiveRecord::SupportedType
         raise Fail.new
       end
 
       private def generate_binary_op(query, separator, param_count, parenthesis = false)
-        puts "Binary op"
-        puts query.receiver.class
-        puts param_count
         query_a = _generate(query.receiver, param_count)
-        puts query_a
         param_count += query_a.params.keys.size
-        puts param_count
-        puts query.argument.class
+
         query_b = _generate(query.argument, param_count)
-        puts query_b
         query_a.concat_with(separator, query_b, parenthesis)
       end
 
