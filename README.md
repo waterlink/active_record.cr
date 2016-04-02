@@ -6,6 +6,27 @@ Don't confuse with Ruby's activerecord: aim of this is to be true to OO techniqu
 
 **Work in progress**
 
+## Contents:
+
+- [Installation](#installation)
+- [TODO](#todo)
+- [Usage](#usage)
+  - [Define your model](#define-your-model)
+  - [Create a new record](#create-a-new-record)
+  - [Get existing record by id](#get-existing-record-by-id)
+  - [Query multiple records](#query-multiple-records)
+  - [Update existing record](#update-existing-record)
+  - [Delete existing record](#delete-existing-record)
+  - [Enforcing encapsulation](#enforcing-encapsulation)
+  - [Query DSL](#query-dsl)
+  - [Connection configuration](#connection-configuration)
+  - [Connection pool configuration](#connection-pool-configuration-experimental)
+  - [Joins](#joins-todo)
+- [Known database adapters](#known-database-adapters)
+- [Development](#development)
+  - [Creating your own database adapter](#creating-your-own-database-adapter)
+- [Contributing](#contributing)
+
 ## TODO
 
 - [x] Implement model definition syntax
@@ -190,6 +211,12 @@ Supported comparison operators: `== != > >= < <=`
 Supported logic operators: `or | and & xor ^ not`
 
 Supported is operators: `is_true is_not_true is_false is_not_false is_unknown is_not_unknown is_null is_not_null`
+
+Filtering with `IN (..., ..., ...)` query:
+
+```crystal
+criteria("subject_id").in([37, 42, 45])
+```
 
 ### Connection configuration
 
