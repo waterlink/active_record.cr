@@ -187,7 +187,7 @@ criteria("subject_id").is_not_null                    # [(subject_id) IS NOT NUL
 
 Supported comparison operators: `== != > >= < <=`
 
-Supported logic operators: `or | and & xor ^ not !`
+Supported logic operators: `or | and & xor ^ not`
 
 Supported is operators: `is_true is_not_true is_false is_not_false is_unknown is_not_unknown is_null is_not_null`
 
