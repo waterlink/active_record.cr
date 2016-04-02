@@ -40,6 +40,21 @@ module ActiveRecord
       end
     end
 
+    class ArrayQueryHandler
+      def initialize(&@param_name_transformer : Int32 -> String)
+      end
+
+      def handle(query : Array(T), param_count = 0)
+        params = {} of String => T
+        query = query.map do |value|
+          param_count += 1
+          params[param_count.to_s] = value
+          @param_name_transformer.call(param_count)
+        end.join(", ")
+        {Query.new("(#{query})", params), param_count}
+      end
+    end
+
     class QueryGenerator < ::ActiveRecord::QueryGenerator
       alias HandledTypes = ::ActiveRecord::SupportedType | ::ActiveRecord::QueryObject
 
@@ -145,14 +160,9 @@ module ActiveRecord
         Query.new(":#{param_count}", {"#{param_count}" => query})
       end
 
-      def _generate(query : ::Array(T), param_count = 0)
-        params = {} of String => T
-        query = query.map do |value|
-          param_count += 1
-          params[param_count.to_s] = value
-          ":#{param_count}"
-        end.join(", ")
-        Query.new("(#{query})", params)
+      def _generate(query : Array(T), param_count = 0)
+        result, param_count = ArrayQueryHandler.new { |name| ":#{name}" }.handle(query)
+        result
       end
 
       def _generate(query, params_count)
