@@ -10,8 +10,11 @@ dependencies:
   pool:
     github: ysbaddaden/pool
     version: ~> 0.2
+  singleton:
+    github: waterlink/singleton.cr
+    version: ~> 0.1
 
 development_dependencies:
   mocks:
     github: waterlink/mocks.cr
-    branch: master
+    version: ~> 0.9

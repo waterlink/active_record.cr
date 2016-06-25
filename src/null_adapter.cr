@@ -41,7 +41,9 @@ module ActiveRecord
       new(table_name, primary_field, fields, register)
     end
 
-    def initialize(@table_name, @primary_field, @fields, register = true)
+    @@query_generators : Array(QueryGenerator)?
+
+    def initialize(@table_name : String, @primary_field : String, @fields : Array(String), register = true)
       @last_id = 0
       @records = [] of Hash(String, ActiveRecord::SupportedType)
       @deleted = [] of Int32

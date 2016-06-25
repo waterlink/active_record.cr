@@ -35,7 +35,11 @@ module ActiveRecord
     end
 
     macro table_name(value)
-      @@table_name = {{value.stringify}}
+      set_table_name({{value.id.stringify}})
+    end
+
+    def self.set_table_name(value)
+      @@table_name = value
     end
 
     macro primary(field_declaration)
@@ -125,6 +129,8 @@ module ActiveRecord
     private def self.table_name_value
       (@@table_name ||= Support.plural(name)).not_nil!
     end
+
+    @@table_name : String?
 
     def initialize(hash)
       hash.each do |field, value|

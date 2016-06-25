@@ -1,6 +1,6 @@
 module ActiveRecord
   module Sql
-    struct Query
+    class Query < QueryGenerator::QueryProtocol
       class EmptyParams
         def self.build
           {} of String => ::ActiveRecord::SupportedType
@@ -18,7 +18,7 @@ module ActiveRecord
         new(*args)
       end
 
-      def initialize(@query, params = nil)
+      def initialize(@query : String, params = nil)
         @params = EmptyParams.build
         (params || EMPTY_PARAMS).each do |key, value|
           @params[key] = value

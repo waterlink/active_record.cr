@@ -28,16 +28,16 @@ class SameQueryExpectation(T)
   def initialize(@expected : T)
   end
 
-  def match(@actual)
-    ActiveRecord::QueryObject.same_query?(@expected, @actual)
+  def match(actual)
+    ActiveRecord::QueryObject.same_query?(@expected, actual)
   end
 
-  def failure_message(_ignored = nil)
-    "expected: #{@expected.inspect}\n     got: #{@actual.inspect}"
+  def failure_message(actual)
+    "expected: #{@expected.inspect}\n     got: #{actual.inspect}"
   end
 
-  def negative_failure_message(_ignored = nil)
-    "expected: value != #{@expected.inspect}\n     got: #{@actual.inspect}"
+  def negative_failure_message(actual)
+    "expected: value != #{@expected.inspect}\n     got: #{actual.inspect}"
   end
 end
 

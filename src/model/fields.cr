@@ -1,3 +1,17 @@
+private macro init_typed_fields
+  {
+    {% for group in TYPE_GROUPS %}
+      {{group.id.stringify}} => {{group.id}}.new,
+    {% end %}
+  }
+end
+
+private macro alias_typed_fields(name)
+  alias {{name.id}} = {% for group in TYPE_GROUPS %}
+    {{group.id}} |
+  {% end %} {{TYPE_GROUPS[0].id}}
+end
+
 module ActiveRecord
   # Model::Fields represents collection of typed fields for model instance
   class Model::Fields
@@ -21,7 +35,9 @@ module ActiveRecord
       alias {{group.id}} = Generic({{group.id}}Types)
     {% end %}
 
-    private getter typed_fields
+    alias_typed_fields(GenericSupportedType)
+
+    private getter typed_fields : Hash(::String, GenericSupportedType)
 
     def initialize
       @typed_fields = init_typed_fields
@@ -45,12 +61,4 @@ module ActiveRecord
       hash
     end
   end
-end
-
-private macro init_typed_fields
-  {
-    {% for group in TYPE_GROUPS %}
-      {{group.id.stringify}} => {{group.id}}.new,
-    {% end %}
-  }
 end

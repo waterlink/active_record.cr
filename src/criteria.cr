@@ -22,7 +22,7 @@ module ActiveRecord
       Registry.fetch(name)
     end
 
-    def initialize(@name)
+    def initialize(@name : String)
     end
 
     def expression
