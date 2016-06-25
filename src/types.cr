@@ -1,12 +1,14 @@
 module ActiveRecord
+  AS = {} of String => Int32
   SPEC_TYPES = [] of Int32
   TYPE_GROUPS = [] of Int32
 
-  macro alias_types(group, special=false, as=nil)
-    {% as = "#{group.id}Types".id unless as %}
+  macro alias_types(group, special=false, _as=nil)
+    {% AS[""] = _as %}
+    {% AS[""] = "#{group.id}Types".id unless AS.[""] %}
     {% TYPE_GROUPS << group unless special %}
 
-    alias {{as.id}} =
+    alias {{AS[""].id}} =
       {% for x in SPEC_TYPES %}
         {% if x[0].id == group.id %}
           {% SPEC_TYPES << {"*Supported*", x[1].id} unless special %}
@@ -76,8 +78,8 @@ module ActiveRecord
           {{default}} == other
         end
 
-        macro method_missing(name, args, block)
-          {{default}}.\{{name.id}}(\{{args.argify}}) \{{block}}
+        macro method_missing(call)
+          {{default}}.\{{call.name.id}}(\{{call.args.argify}}) \{{call.block}}
         end
       {{:end.id}}
 

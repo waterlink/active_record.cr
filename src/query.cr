@@ -87,8 +87,8 @@ module ActiveRecord
       Query.new(klass.new(self))
     end
 
-    class GenericExpression
-      def initialize(@receiver, @argument)
+    class GenericExpression(T, K)
+      def initialize(@receiver : T, @argument : K)
       end
 
       def ==(other : GenericExpression)
@@ -104,8 +104,8 @@ module ActiveRecord
       getter argument
     end
 
-    class UnaryExpression
-      def initialize(@receiver)
+    class UnaryExpression(T)
+      def initialize(@receiver : T)
       end
 
       def ==(other : UnaryExpression)
@@ -119,61 +119,61 @@ module ActiveRecord
       getter receiver
     end
 
-    class Equal < GenericExpression
+    class Equal(T, K) < GenericExpression(T, K)
     end
 
-    class NotEqual < GenericExpression
+    class NotEqual(T, K) < GenericExpression(T, K)
     end
 
-    class Greater < GenericExpression
+    class Greater(T, K) < GenericExpression(T, K)
     end
 
-    class GreaterEqual < GenericExpression
+    class GreaterEqual(T, K) < GenericExpression(T, K)
     end
 
-    class Less < GenericExpression
+    class Less(T, K) < GenericExpression(T, K)
     end
 
-    class LessEqual < GenericExpression
+    class LessEqual(T, K) < GenericExpression(T, K)
     end
 
-    class Or < GenericExpression
+    class Or(T, K) < GenericExpression(T, K)
     end
 
-    class And < GenericExpression
+    class And(T, K) < GenericExpression(T, K)
     end
 
-    class Xor < GenericExpression
+    class Xor(T, K) < GenericExpression(T, K)
     end
 
-    class In < GenericExpression
+    class In(T, K) < GenericExpression(T, K)
     end
 
-    class Not < UnaryExpression
+    class Not(T) < UnaryExpression(T)
     end
 
-    class IsTrue < UnaryExpression
+    class IsTrue(T) < UnaryExpression(T)
     end
 
-    class IsFalse < UnaryExpression
+    class IsFalse(T) < UnaryExpression(T)
     end
 
-    class IsUnknown < UnaryExpression
+    class IsUnknown(T) < UnaryExpression(T)
     end
 
-    class IsNull < UnaryExpression
+    class IsNull(T) < UnaryExpression(T)
     end
 
-    class IsNotTrue < UnaryExpression
+    class IsNotTrue(T) < UnaryExpression(T)
     end
 
-    class IsNotFalse < UnaryExpression
+    class IsNotFalse(T) < UnaryExpression(T)
     end
 
-    class IsNotUnknown < UnaryExpression
+    class IsNotUnknown(T) < UnaryExpression(T)
     end
 
-    class IsNotNull < UnaryExpression
+    class IsNotNull(T) < UnaryExpression(T)
     end
   end
 end

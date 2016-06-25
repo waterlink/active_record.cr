@@ -1,20 +1,35 @@
+require "singleton"
+
 class FakeAdapter < ActiveRecord::Adapter
   getter adapter, table_name, primary_field, fields
 
-  def initialize(@table_name, @primary_field, @fields, register = true)
+  @@table_name : String?
+  @@primary_field : String?
+  @@fields : Array(String)?
+  @@register : Bool?
+
+  def initialize(@table_name : String, @primary_field : String, @fields : Array(String), register = true)
     @adapter = ActiveRecord::NullAdapter.new(table_name.not_nil!, primary_field, fields, register)
   end
 
+  def initialize
+    initialize(@@table_name.not_nil!, @@primary_field.not_nil!, @@fields.not_nil!, @@register.not_nil!)
+  end
+
   def self.instance
-    @@instance.not_nil!
+    Singleton.instance_of(self)
   end
 
   def self._reset
-    @@instance = nil
+    Singleton.reset
   end
 
   def self.build(table_name, primary_field, fields, register = true)
-    (@@instance ||= new(table_name, primary_field, fields, register)).not_nil!
+    @@table_name = table_name
+    @@primary_field = primary_field
+    @@fields = fields
+    @@register = register
+    instance
   end
 
   macro delegate(to, method)

@@ -5,7 +5,7 @@ module ActiveRecord
     def snakecase(name)
       first = true
 
-      String.build(name.bytesize * 2) do |str|
+      String.build do |str|
         name.each_char do |chr|
           if first
             first = false
