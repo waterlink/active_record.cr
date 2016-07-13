@@ -17,6 +17,7 @@ module ActiveRecord
   end
 
   abstract class Adapter
+    @@query_generators = Array(QueryGenerator).new
     extend AdapterHelper
 
     def self.build(table_name, primary_field, fields, register = true)
