@@ -1,23 +1,20 @@
+--- 
 name: active_record
-version: 0.4.3
-
-authors:
-- Oleksii Fedorov <waterlink000@gmail.com>
-
+version: 1.0.0
+authors: 
+  - Oleksii Fedorov <waterlink000@gmail.com>
 license: MIT
-
-dependencies:
-  pool:
+dependencies: 
+  pool: 
     github: ysbaddaden/pool
     version: ~> 0.2
-  query:
+  query: 
     github: waterlink/query.cr
     version: ~> 0.1
-
-development_dependencies:
-  mocks:
+development_dependencies: 
+  mocks: 
     github: waterlink/mocks.cr
     version: ~> 0.9
-  singleton:
+  singleton: 
     github: waterlink/singleton.cr
     version: ~> 0.1
