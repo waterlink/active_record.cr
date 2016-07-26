@@ -188,6 +188,9 @@ Person.where({ :first_name => "John" })    #=> Error: unable to call private met
 
 ### Query DSL
 
+This library uses https://github.com/waterlink/query.cr/ for handling query
+construction and query DSL.
+
 Generally to use `#criteria` DSL method, you need to `include
 ActiveRecord::CriteriaHelper`, but inside of your model code you
 don't need to do that.
