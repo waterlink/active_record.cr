@@ -4,7 +4,11 @@ require "../../src/sql/*"
 class UnknownExpression
 end
 
-def generate(query : ActiveRecord::Sql::QueryGenerator::HandledTypes)
+def generate(query : ActiveRecord::SupportedType)
+  ActiveRecord::Sql::QueryGenerator.new.generate(query).query
+end
+
+def generate(query : Query::Query)
   ActiveRecord::Sql::QueryGenerator.new.generate(query).query
 end
 

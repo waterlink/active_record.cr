@@ -29,7 +29,7 @@ class SameQueryExpectation(T)
   end
 
   def match(actual)
-    ActiveRecord::QueryObject.same_query?(@expected, actual)
+    ::Query::EqualityHelper.equals(actual, @expected)
   end
 
   def failure_message(actual)

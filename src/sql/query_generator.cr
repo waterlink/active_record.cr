@@ -56,102 +56,104 @@ module ActiveRecord
     end
 
     class QueryGenerator < ::ActiveRecord::QueryGenerator
-      alias HandledTypes = ::ActiveRecord::SupportedType | ::ActiveRecord::QueryObject
-
       class Fail < ArgumentError
       end
 
-      def generate(query : HandledTypes, param_count = 0)
-        ::ActiveRecord::QueryGenerator::Response.lift(_generate(query, param_count))
-      rescue Fail
-        ::ActiveRecord::QueryGenerator::Next.new
+      def generate(query : ::ActiveRecord::SupportedType, param_count = 0)
+        _handle(query, param_count)
+      end
+
+      def generate(query : ::Query::Query, param_count = 0)
+        _handle(query, param_count)
       end
 
       def generate(query, param_count = 0)
         ::ActiveRecord::QueryGenerator::Next.new
       end
 
-      def _generate(query : ::ActiveRecord::Query, param_count = 0)
-        _generate(query.expression.not_nil!, param_count)
+      def _handle(query, param_count = 0)
+        ::ActiveRecord::QueryGenerator::Response.lift(_generate(query, param_count))
+      rescue Fail
+        ::ActiveRecord::QueryGenerator::Next.new
       end
 
-      def _generate(query : ::ActiveRecord::Criteria, param_count = 0)
-        Query.new(query.to_s)
+      def _generate(query : ::Query::Criteria, param_count = 0)
+        Query.new(query.name)
       end
 
-      def _generate(query : ::ActiveRecord::Query::Equal, param_count = 0)
+      def _generate(query : ::Query::Equals(T), param_count = 0)
         generate_binary_op(query, " = ", param_count)
       end
 
-      def _generate(query : ::ActiveRecord::Query::NotEqual, param_count = 0)
+      def _generate(query : ::Query::NotEquals, param_count = 0)
         generate_binary_op(query, " <> ", param_count)
       end
 
-      def _generate(query : ::ActiveRecord::Query::Greater, param_count = 0)
+      def _generate(query : ::Query::MoreThan, param_count = 0)
         generate_binary_op(query, " > ", param_count)
       end
 
-      def _generate(query : ::ActiveRecord::Query::GreaterEqual, param_count = 0)
+      def _generate(query : ::Query::MoreThanOrEqual, param_count = 0)
         generate_binary_op(query, " >= ", param_count)
       end
 
-      def _generate(query : ::ActiveRecord::Query::Less, param_count = 0)
+      def _generate(query : ::Query::LessThan, param_count = 0)
         generate_binary_op(query, " < ", param_count)
       end
 
-      def _generate(query : ::ActiveRecord::Query::LessEqual, param_count = 0)
+      def _generate(query : ::Query::LessThanOrEqual, param_count = 0)
         generate_binary_op(query, " <= ", param_count)
       end
 
-      def _generate(query : ::ActiveRecord::Query::Or, param_count = 0)
+      def _generate(query : ::Query::Or, param_count = 0)
         generate_binary_op(query, " OR ", param_count, parenthesis: true)
       end
 
-      def _generate(query : ::ActiveRecord::Query::In, param_count = 0)
+      def _generate(query : ::Query::In, param_count = 0)
         generate_binary_op(query, " IN ", param_count)
       end
 
-      def _generate(query : ::ActiveRecord::Query::Xor, param_count = 0)
+      def _generate(query : ::Query::Xor, param_count = 0)
         generate_binary_op(query, " XOR ", param_count, parenthesis: true)
       end
 
-      def _generate(query : ::ActiveRecord::Query::And, param_count = 0)
+      def _generate(query : ::Query::And, param_count = 0)
         generate_binary_op(query, " AND ", param_count, parenthesis: true)
       end
 
-      def _generate(query : ::ActiveRecord::Query::Not, param_count = 0)
+      def _generate(query : ::Query::Not, param_count = 0)
         generate_unary_op(query, param_count, parenthesis: true, prefix: "NOT ")
       end
 
-      def _generate(query : ::ActiveRecord::Query::IsTrue, param_count = 0)
+      def _generate(query : ::Query::IsTrue, param_count = 0)
         generate_unary_op(query, param_count, parenthesis: true, suffix: " IS TRUE")
       end
 
-      def _generate(query : ::ActiveRecord::Query::IsNotTrue, param_count = 0)
+      def _generate(query : ::Query::IsNotTrue, param_count = 0)
         generate_unary_op(query, param_count, parenthesis: true, suffix: " IS NOT TRUE")
       end
 
-      def _generate(query : ::ActiveRecord::Query::IsFalse, param_count = 0)
+      def _generate(query : ::Query::IsFalse, param_count = 0)
         generate_unary_op(query, param_count, parenthesis: true, suffix: " IS FALSE")
       end
 
-      def _generate(query : ::ActiveRecord::Query::IsNotFalse, param_count = 0)
+      def _generate(query : ::Query::IsNotFalse, param_count = 0)
         generate_unary_op(query, param_count, parenthesis: true, suffix: " IS NOT FALSE")
       end
 
-      def _generate(query : ::ActiveRecord::Query::IsUnknown, param_count = 0)
+      def _generate(query : ::Query::IsUnknown, param_count = 0)
         generate_unary_op(query, param_count, parenthesis: true, suffix: " IS UNKNOWN")
       end
 
-      def _generate(query : ::ActiveRecord::Query::IsNotUnknown, param_count = 0)
+      def _generate(query : ::Query::IsNotUnknown, param_count = 0)
         generate_unary_op(query, param_count, parenthesis: true, suffix: " IS NOT UNKNOWN")
       end
 
-      def _generate(query : ::ActiveRecord::Query::IsNull, param_count = 0)
+      def _generate(query : ::Query::IsNull, param_count = 0)
         generate_unary_op(query, param_count, parenthesis: true, suffix: " IS NULL")
       end
 
-      def _generate(query : ::ActiveRecord::Query::IsNotNull, param_count = 0)
+      def _generate(query : ::Query::IsNotNull, param_count = 0)
         generate_unary_op(query, param_count, parenthesis: true, suffix: " IS NOT NULL")
       end
 
@@ -170,15 +172,15 @@ module ActiveRecord
       end
 
       private def generate_binary_op(query, separator, param_count, parenthesis = false)
-        query_a = _generate(query.receiver, param_count)
+        query_a = _generate(query.left, param_count)
         param_count += query_a.params.keys.size
 
-        query_b = _generate(query.argument, param_count)
+        query_b = _generate(query.right, param_count)
         query_a.concat_with(separator, query_b, parenthesis)
       end
 
       private def generate_unary_op(query, param_count, parenthesis = false, prefix = "", suffix = "")
-        query_a = _generate(query.receiver, param_count)
+        query_a = _generate(query.query, param_count)
 
         query_a.wrap_with(prefix, suffix, parenthesis)
       end

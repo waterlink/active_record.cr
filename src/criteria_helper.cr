@@ -1,10 +1,7 @@
-require "./criteria"
-require "./query"
+require "query"
 
 module ActiveRecord
   module CriteriaHelper
-    def criteria(name)
-      Criteria.build(name)
-    end
+    include Query::CriteriaHelper
   end
 end

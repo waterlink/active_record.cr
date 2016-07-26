@@ -438,7 +438,7 @@ module PostgresAdapter
       all
     end
 
-    def where(query : ActiveRecord::Query)
+    def where(query : Query::Query)
       all
     end
 

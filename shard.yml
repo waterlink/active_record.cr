@@ -10,6 +10,9 @@ dependencies:
   pool:
     github: ysbaddaden/pool
     version: ~> 0.2
+  query:
+    github: waterlink/query.cr
+    version: ~> 0.1
 
 development_dependencies:
   mocks:
