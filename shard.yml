@@ -14,7 +14,7 @@ dependencies:
 development_dependencies: 
   mocks: 
     github: waterlink/mocks.cr
-    version: ~> 0.9
+    version: ~> 0.9.3
   singleton: 
     github: waterlink/singleton.cr
     version: ~> 0.1

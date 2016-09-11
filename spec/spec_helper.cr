@@ -1,19 +1,19 @@
-ifdef !active_record_adapter
+{% if !flag?(:active_record_adapter) %}
   require "spec"
   require "mocks"
   require "../src/active_record"
   require "../src/null_adapter"
   require "../src/criteria_helper"
   require "./fake_adapter"
-end
+{% end %}
 
 def _specs_reset
   ActiveRecord::NullAdapter.reset
   FakeAdapter._reset
 
-  ifdef !active_record_adapter
+  {% if !flag?(:active_record_adapter) %}
     Mocks.reset
-  end
+  {% end %}
 end
 
 Spec.before_each do
