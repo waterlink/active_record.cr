@@ -1,9 +1,9 @@
 module ActiveRecord
-  AS = {} of String => Int32
-  SPEC_TYPES = [] of Int32
+  AS          = {} of String => Int32
+  SPEC_TYPES  = [] of Int32
   TYPE_GROUPS = [] of Int32
 
-  macro alias_types(group, special=false, _as=nil)
+  macro alias_types(group, special = false, _as = nil)
     {% AS[""] = _as %}
     {% AS[""] = "#{group.id}Types".id unless AS.[""] %}
     {% TYPE_GROUPS << group unless special %}
@@ -25,12 +25,12 @@ module ActiveRecord
       {% end %}
   end
 
-  macro register_type(type, group, name, register=true)
+  macro register_type(type, group, name, register = true)
     {% ActiveRecord::SPEC_TYPES << {group, name} if register == true %}
 
     {{type.id}} {{name.id}}
       def not_null! : {{name}}
-        self as {{name}}
+        self.as({{name}})
       end
 
       def null?
@@ -53,7 +53,7 @@ module ActiveRecord
     {{:end.id}}
   end
 
-  macro register_type_group(kind, ty, default=nil, comparable=false, to_s="")
+  macro register_type_group(kind, ty, default = nil, comparable = false, to_s = "")
     {{kind.id}} {{ty.id}}
       def self.null_class
         Null

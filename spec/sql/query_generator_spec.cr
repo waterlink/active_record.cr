@@ -82,8 +82,8 @@ module ActiveRecord
 
         example "or" do
           query = (criteria("number") < 29) |
-            (criteria("other_number") == 2)
-              .or(criteria("kind") == "none")
+                  (criteria("other_number") == 2)
+                    .or(criteria("kind") == "none")
 
           expected_query = Query.new(
             "(number < :1) OR ((other_number = :2) OR (kind = :3))",
@@ -93,7 +93,7 @@ module ActiveRecord
           generate(query).should eq(expected_query)
 
           query = ((criteria("number") < 29) |
-            (criteria("other_number") == 2))
+                   (criteria("other_number") == 2))
             .or(criteria("kind") == "none")
 
           expected_query = Query.new(
@@ -106,8 +106,8 @@ module ActiveRecord
 
         example "and" do
           query = (criteria("number") < 29) &
-            (criteria("other_number") == 2)
-              .and(criteria("kind") == "none")
+                  (criteria("other_number") == 2)
+                    .and(criteria("kind") == "none")
 
           expected_query = Query.new(
             "(number < :1) AND ((other_number = :2) AND (kind = :3))",
@@ -119,8 +119,8 @@ module ActiveRecord
 
         example "mixing and, or" do
           query = (criteria("number") < 29) &
-            (criteria("other_number") == 2)
-              .or(criteria("kind") == "none")
+                  (criteria("other_number") == 2)
+                    .or(criteria("kind") == "none")
 
           expected_query = Query.new(
             "(number < :1) AND ((other_number = :2) OR (kind = :3))",
