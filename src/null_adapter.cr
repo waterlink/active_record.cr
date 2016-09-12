@@ -63,7 +63,7 @@ module ActiveRecord
       records
     end
 
-    def where(query : Query::Query)
+    def where(query : ::Query::Query)
       query = self.class.generate_query(query).not_nil!
       _where(query.query, query.params)
     end
