@@ -1,6 +1,6 @@
 --- 
 name: active_record
-version: 1.0.2
+version: 1.0.2-rc1
 authors: 
   - Oleksii Fedorov <waterlink000@gmail.com>
 license: MIT
