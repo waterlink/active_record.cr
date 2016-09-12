@@ -49,8 +49,8 @@ module ActiveRecord
     end
 
     def get(primary_key)
-      return nil if deleted.includes?((primary_key as Int32) - 1)
-      records[(primary_key as Int32) - 1]
+      return nil if deleted.includes?(primary_key.as(Int32) - 1)
+      records[primary_key.as(Int32) - 1]
     end
 
     def create(fields)
@@ -63,7 +63,7 @@ module ActiveRecord
       records
     end
 
-    def where(query : Query::Query)
+    def where(query : ::Query::Query)
       query = self.class.generate_query(query).not_nil!
       _where(query.query, query.params)
     end
@@ -104,11 +104,11 @@ module ActiveRecord
     end
 
     def update(primary_key, fields)
-      records[(primary_key as Int32) - 1] = fields.dup
+      records[primary_key.as(Int32) - 1] = fields.dup
     end
 
     def delete(primary_key)
-      deleted << (primary_key as Int32) - 1
+      deleted << primary_key.as(Int32) - 1
     end
 
     def _reset

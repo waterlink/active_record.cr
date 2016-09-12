@@ -2,25 +2,25 @@ require "./spec_helper"
 
 module StuffGenerator
   def self.an_int
-    37 as ActiveRecord::SupportedType
+    37.as(ActiveRecord::SupportedType)
   end
 
   def self.an_int_null
-    Int::Null.new as ActiveRecord::SupportedType
+    Int::Null.new.as(ActiveRecord::SupportedType)
   end
 
   def self.a_string
-    "hello world" as ActiveRecord::SupportedType
+    "hello world".as(ActiveRecord::SupportedType)
   end
 
   def self.a_string_null
-    String::Null.new as ActiveRecord::SupportedType
+    String::Null.new.as(ActiveRecord::SupportedType)
   end
 end
 
 macro test_non_null(ty, value, other_value, name="_", check_op="")
 context "when {{ty}} is not null" do
-  subject = {{value}} as SupportedType
+  subject = {{value}}.as(SupportedType)
 
   it "has correct type" do
     typeof(subject).should_not eq {{ty}}
@@ -42,7 +42,7 @@ context "when {{ty}} is not null" do
   end
 
   it "forwards calls to original value" do
-    {{name.id}} = subject as {{ty}}
+    {{name.id}} = subject.as({{ty}})
     ({{check_op.id}}).should eq(true)
   end
 
@@ -56,7 +56,7 @@ end
 
 macro test_null(ty, zero, other_value, name="_", check_op="true")
 context "when {{ty}} is null" do
-  subject = {{ty}}::Null.new as SupportedType
+  subject = {{ty}}::Null.new.as(SupportedType)
 
   it "has correct type" do
     typeof(subject).should_not eq {{ty}}
@@ -79,7 +79,7 @@ context "when {{ty}} is null" do
   end
 
   it "forwards calls to zero-like value" do
-    {{name.id}} = subject as {{ty}}::Null
+    {{name.id}} = subject.as({{ty}}::Null)
     ({{check_op.id}}).should eq(true)
   end
 
@@ -93,11 +93,11 @@ end
 
 macro test_comparable(ty, spec_ty, value, zero)
 it "implements correct Comparable" do
-  subject = {{value}} as SupportedType
-  null = {{ty}}::Null.new as SupportedType
+  subject = {{value}}.as(SupportedType)
+  null = {{ty}}::Null.new.as(SupportedType)
 
-  ((subject as {{spec_ty}}) <=> {{zero}}).should eq({{value}} <=> {{zero}})
-  ((null as {{ty}}::Null) <=> {{value}}).should eq({{zero}} <=> {{value}})
+  (subject.as({{spec_ty}}) <=> {{zero}}).should eq({{value}} <=> {{zero}})
+  (null.as({{ty}}::Null) <=> {{value}}).should eq({{zero}} <=> {{value}})
 end
 end
 

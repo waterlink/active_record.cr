@@ -53,12 +53,12 @@ module ActiveRecord
         \{% MACRO_FIELDS_{{MACRO_CURRENT.last.id}} << name %}
 
         {{level.id}} def \{{name.id}}=(value : \{{field_declaration.type}})
-          typed_fields = fields[\{{field_declaration.type.stringify}}] as ::ActiveRecord::Model::Fields::\{{field_declaration.type.id}}
+          typed_fields = fields[\{{field_declaration.type.stringify}}].as(::ActiveRecord::Model::Fields::\{{field_declaration.type.id}})
           typed_fields.fields[\{{field_declaration.var.stringify}}] = value
         end
 
         {{level.id}} def \{{name.id}}
-          typed_fields = fields[\{{field_declaration.type.stringify}}] as ::ActiveRecord::Model::Fields::\{{field_declaration.type.id}}
+          typed_fields = fields[\{{field_declaration.type.stringify}}].as(::ActiveRecord::Model::Fields::\{{field_declaration.type.id}})
           typed_fields.fields.fetch(\{{field_declaration.var.stringify}}, \{{field_declaration.type}}::Null.new)
         end
 
@@ -157,7 +157,7 @@ module ActiveRecord
     def self.get(primary_key)
       pool.connection do |adapter|
         if adapter.get(primary_key)
-          build(adapter.get(primary_key)) as self
+          build(adapter.get(primary_key)).as(self)
         else
           raise RecordNotFoundException.new("Record not found with given id.")
         end
