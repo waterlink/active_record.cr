@@ -30,7 +30,7 @@ module ActiveRecord
 
     {{type.id}} {{name.id}}
       def not_null! : {{name}}
-        self as {{name}}
+        self.as({{name}})
       end
 
       def null?
