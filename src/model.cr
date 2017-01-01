@@ -17,8 +17,8 @@ module ActiveRecord
 
     MACRO_CURRENT = [] of String
 
-    DEFAULT_CONNECTION_POOL_CAPACITY = 1
-    DEFAULT_CONNECTION_POOL_TIMEOUT = 2.0
+    DEFAULT_CONNECTION_POOL_CAPACITY =   1
+    DEFAULT_CONNECTION_POOL_TIMEOUT  = 2.0
 
     macro null_object(name_and_super, &block)
       class {{name_and_super.receiver}} < {{name_and_super.args[0]}}
@@ -53,12 +53,12 @@ module ActiveRecord
         \{% MACRO_FIELDS_{{MACRO_CURRENT.last.id}} << name %}
 
         {{level.id}} def \{{name.id}}=(value : \{{field_declaration.type}})
-          typed_fields = fields[\{{field_declaration.type.stringify}}] as ::ActiveRecord::Model::Fields::\{{field_declaration.type.id}}
+          typed_fields = fields[\{{field_declaration.type.stringify}}].as ::ActiveRecord::Model::Fields::\{{field_declaration.type.id}}
           typed_fields.fields[\{{field_declaration.var.stringify}}] = value
         end
 
         {{level.id}} def \{{name.id}}
-          typed_fields = fields[\{{field_declaration.type.stringify}}] as ::ActiveRecord::Model::Fields::\{{field_declaration.type.id}}
+          typed_fields = fields[\{{field_declaration.type.stringify}}].as ::ActiveRecord::Model::Fields::\{{field_declaration.type.id}}
           typed_fields.fields.fetch(\{{field_declaration.var.stringify}}, \{{field_declaration.type}}::Null.new)
         end
 
@@ -145,7 +145,7 @@ module ActiveRecord
       null_value
     end
 
-    def self.build(hash : Hash(K, V))
+    def self.build(hash : Hash(K, V)) forall K, V
       new(hash)
     end
 
@@ -157,7 +157,7 @@ module ActiveRecord
     def self.get(primary_key)
       pool.connection do |adapter|
         if adapter.get(primary_key)
-          build(adapter.get(primary_key)) as self
+          build(adapter.get(primary_key)).as(self)
         else
           raise RecordNotFoundException.new("Record not found with given id.")
         end
@@ -228,7 +228,7 @@ module ActiveRecord
     private def set_field(field, value)
       return unless self.class.fields.includes?(field)
       fields[self.class.field_types[field]]
-                       .set_field(field, value)
+        .set_field(field, value)
     end
 
     def self.null_value

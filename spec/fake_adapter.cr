@@ -17,7 +17,7 @@ class FakeAdapter < ActiveRecord::Adapter
   end
 
   def self.instance
-    Singleton.instance_of(self)
+    Singleton::Of(self).instance
   end
 
   def self._reset

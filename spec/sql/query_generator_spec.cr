@@ -82,8 +82,8 @@ module ActiveRecord
 
         example "or" do
           query = (criteria("number") < 29) |
-            (criteria("other_number") == 2)
-              .or(criteria("kind") == "none")
+                  (criteria("other_number") == 2)
+                    .or(criteria("kind") == "none")
 
           expected_query = Query.new(
             "(number < :1) OR ((other_number = :2) OR (kind = :3))",
@@ -93,7 +93,7 @@ module ActiveRecord
           generate(query).should eq(expected_query)
 
           query = ((criteria("number") < 29) |
-            (criteria("other_number") == 2))
+                   (criteria("other_number") == 2))
             .or(criteria("kind") == "none")
 
           expected_query = Query.new(
@@ -106,8 +106,8 @@ module ActiveRecord
 
         example "and" do
           query = (criteria("number") < 29) &
-            (criteria("other_number") == 2)
-              .and(criteria("kind") == "none")
+                  (criteria("other_number") == 2)
+                    .and(criteria("kind") == "none")
 
           expected_query = Query.new(
             "(number < :1) AND ((other_number = :2) AND (kind = :3))",
@@ -119,8 +119,8 @@ module ActiveRecord
 
         example "mixing and, or" do
           query = (criteria("number") < 29) &
-            (criteria("other_number") == 2)
-              .or(criteria("kind") == "none")
+                  (criteria("other_number") == 2)
+                    .or(criteria("kind") == "none")
 
           expected_query = Query.new(
             "(number < :1) AND ((other_number = :2) OR (kind = :3))",
@@ -160,33 +160,25 @@ module ActiveRecord
         end
 
         example "IS expressions" do
-          [
+          generate(criteria("bool").is_true).should eq(Query["(bool) IS TRUE", Query::EMPTY_PARAMS])
+          generate(criteria("bool").is_not_true).should eq(Query["(bool) IS NOT TRUE", Query::EMPTY_PARAMS])
+          generate((criteria("bool") < 3).is_true).should eq(Query["(bool < :1) IS TRUE", {"1" => 3}])
+          generate((criteria("bool") < 3).is_not_true).should eq(Query["(bool < :1) IS NOT TRUE", {"1" => 3}])
 
-            {criteria("bool").is_true, "(bool) IS TRUE", Query::EMPTY_PARAMS},
-            {criteria("bool").is_not_true, "(bool) IS NOT TRUE", Query::EMPTY_PARAMS},
-            {(criteria("bool") < 3).is_true, "(bool < :1) IS TRUE", {"1" => 3}},
-            {(criteria("bool") < 3).is_not_true, "(bool < :1) IS NOT TRUE", {"1" => 3}},
+          generate(criteria("bool").is_false).should eq(Query["(bool) IS FALSE", Query::EMPTY_PARAMS])
+          generate(criteria("bool").is_not_false).should eq(Query["(bool) IS NOT FALSE", Query::EMPTY_PARAMS])
+          generate((criteria("bool") < 3).is_false).should eq(Query["(bool < :1) IS FALSE", {"1" => 3}])
+          generate((criteria("bool") < 3).is_not_false).should eq(Query["(bool < :1) IS NOT FALSE", {"1" => 3}])
 
-            {criteria("bool").is_false, "(bool) IS FALSE", Query::EMPTY_PARAMS},
-            {criteria("bool").is_not_false, "(bool) IS NOT FALSE", Query::EMPTY_PARAMS},
-            {(criteria("bool") < 3).is_false, "(bool < :1) IS FALSE", {"1" => 3}},
-            {(criteria("bool") < 3).is_not_false, "(bool < :1) IS NOT FALSE", {"1" => 3}},
+          generate(criteria("something").is_unknown).should eq(Query["(something) IS UNKNOWN", Query::EMPTY_PARAMS])
+          generate(criteria("something").is_not_unknown).should eq(Query["(something) IS NOT UNKNOWN", Query::EMPTY_PARAMS])
+          generate((criteria("something") < 3).is_unknown).should eq(Query["(something < :1) IS UNKNOWN", {"1" => 3}])
+          generate((criteria("something") < 3).is_not_unknown).should eq(Query["(something < :1) IS NOT UNKNOWN", {"1" => 3}])
 
-            {criteria("something").is_unknown, "(something) IS UNKNOWN", Query::EMPTY_PARAMS},
-            {criteria("something").is_not_unknown, "(something) IS NOT UNKNOWN", Query::EMPTY_PARAMS},
-            {(criteria("something") < 3).is_unknown, "(something < :1) IS UNKNOWN", {"1" => 3}},
-            {(criteria("something") < 3).is_not_unknown, "(something < :1) IS NOT UNKNOWN", {"1" => 3}},
-
-            {criteria("something").is_null, "(something) IS NULL", Query::EMPTY_PARAMS},
-            {criteria("something").is_not_null, "(something) IS NOT NULL", Query::EMPTY_PARAMS},
-            {(criteria("something") < 3).is_null, "(something < :1) IS NULL", {"1" => 3}},
-            {(criteria("something") < 3).is_not_null, "(something < :1) IS NOT NULL", {"1" => 3}},
-
-          ].each do |example|
-            query = example[0]
-            expected_query = Query[example[1], example[2]]
-            generate(query).should eq(expected_query)
-          end
+          generate(criteria("something").is_null).should eq(Query["(something) IS NULL", Query::EMPTY_PARAMS])
+          generate(criteria("something").is_not_null).should eq(Query["(something) IS NOT NULL", Query::EMPTY_PARAMS])
+          generate((criteria("something") < 3).is_null).should eq(Query["(something < :1) IS NULL", {"1" => 3}])
+          generate((criteria("something") < 3).is_not_null).should eq(Query["(something < :1) IS NOT NULL", {"1" => 3}])
         end
       end
     end

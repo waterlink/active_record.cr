@@ -5,8 +5,8 @@ module ActiveRecord
     def call(params, fields)
       return false unless fields.has_key?("number_of_dependents") &&
                           params.has_key?("1")
-      actual = fields["number_of_dependents"] as Int
-      expected = params["1"] as Int
+      actual = fields["number_of_dependents"].as(Int)
+      expected = params["1"].as(Int)
       actual > expected
     end
   end
@@ -17,8 +17,8 @@ module ActiveRecord
     def call(params, fields)
       return false unless fields.has_key?("number_of_dependents") &&
                           params.has_key?("1")
-      actual = fields["number_of_dependents"] as Int
-      expected = params["1"] as Int
+      actual = fields["number_of_dependents"].as(Int)
+      expected = params["1"].as(Int)
       actual < expected
     end
   end
@@ -29,9 +29,9 @@ module ActiveRecord
     def call(params, fields)
       return false unless fields.has_key?("number_of_dependents") &&
                           params.has_key?("1") && params.has_key?("2")
-      actual = fields["number_of_dependents"] as Int
-      low = params["1"] as Int
-      high = params["2"] as Int
+      actual = fields["number_of_dependents"].as(Int)
+      low = params["1"].as(Int)
+      high = params["2"].as(Int)
       actual > low && actual < high
     end
   end
@@ -40,10 +40,10 @@ module ActiveRecord
     def call(params, fields)
       return false unless fields.has_key?("number_of_dependents") &&
                           params.has_key?("1") && params.has_key?("2")
-      actual = fields["number_of_dependents"] as Int
+      actual = fields["number_of_dependents"].as(Int)
       array = [] of Int32
-      array << params["1"] as Int32
-      array << params["2"] as Int32
+      array << params["1"].as(Int32)
+      array << params["2"].as(Int32)
       array.includes?(actual)
     end
   end
