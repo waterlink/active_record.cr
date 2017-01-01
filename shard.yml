@@ -10,11 +10,11 @@ dependencies:
     version: ~> 0.2
   query: 
     github: waterlink/query.cr
-    version: ~> 0.1
+    version: ~> 0.2
 development_dependencies: 
   mocks: 
     github: waterlink/mocks.cr
     version: ~> 0.9.3
   singleton: 
     github: waterlink/singleton.cr
-    version: ~> 0.1
+    version: ~> 1.0

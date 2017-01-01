@@ -145,7 +145,7 @@ module ActiveRecord
       null_value
     end
 
-    def self.build(hash : Hash(K, V))
+    def self.build(hash : Hash(K, V)) forall K, V
       new(hash)
     end
 

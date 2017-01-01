@@ -79,7 +79,7 @@ module ActiveRecord
         end
 
         macro method_missing(call)
-          {{default}}.\{{call.name.id}}(\{{call.args.argify}}) \{{call.block}}
+          {{default}}.\{{call.name.id}}(\{{call.args.splat}}) \{{call.block}}
         end
       {{:end.id}}
 
