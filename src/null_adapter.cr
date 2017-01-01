@@ -68,7 +68,7 @@ module ActiveRecord
       _where(query.query, query.params)
     end
 
-    def where(query_hash)
+    def where(query_hash : Hash(K, V)) forall K, V
       result = [] of Fields
 
       records.each_index do |index|

@@ -27,7 +27,7 @@ module ActiveRecord
     abstract def create(fields)
     abstract def get(id)
     abstract def all
-    abstract def where(query_hash : Hash)
+    abstract def where(query_hash : Hash(K, V)) forall K, V
     abstract def where(query : ::Query::Query)
     abstract def update(id, fields)
     abstract def delete(id)

@@ -187,15 +187,9 @@ module ActiveRecord
     end
 
     macro query_level(level)
-      {{level.id}} def self.where(query_hash)
+      {{level.id}} def self.where(query)
         pool.connection do |adapter|
-          adapter.where(query_hash).map { |fields| new(fields) }
-        end
-      end
-
-      {{level.id}} def self.where(query, params)
-        pool.connection do |adapter|
-          adapter.where(query, params).map { |fields| new(fields) }
+          adapter.where(query).map { |fields| new(fields) }
         end
       end
 
