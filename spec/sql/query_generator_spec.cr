@@ -33,6 +33,10 @@ module ActiveRecord
       end
 
       describe "#_generate" do
+        example "empty query" do
+          generate(::Query::EmptyQuery.new).should eq(Query["true"])
+        end
+
         example "simple expressions" do
           generate(55).should eq(Query[":1", {"1" => 55}])
           generate("hello world").should eq(Query[":1", {"1" => "hello world"}])

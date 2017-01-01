@@ -66,6 +66,10 @@ module ActiveRecord
         ::ActiveRecord::QueryGenerator::Next.new
       end
 
+      def _generate(query : ::Query::EmptyQuery, param_count = 0)
+        Query.new("true")
+      end
+
       def _generate(query : ::Query::Criteria, param_count = 0)
         Query.new(query.name)
       end
