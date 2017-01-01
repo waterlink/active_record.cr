@@ -121,6 +121,22 @@ module ActiveRecord
           generate(query).should eq(expected_query)
         end
 
+        example "and that came from query_hash.each call" do
+          query_hash = {"hello" => "world", "age" => 27}
+
+          query = ::Query::EmptyQuery.new
+          query_hash.each do |k, v|
+            query = query.and(criteria(k) == v)
+          end
+
+          expected_query = Query.new(
+            "(hello = :1) AND (age = :2)",
+            {"1" => "world", "2" => 27}
+          )
+
+          generate(query).should eq(expected_query)
+        end
+
         example "mixing and, or" do
           query = (criteria("number") < 29) &
                   (criteria("other_number") == 2)
