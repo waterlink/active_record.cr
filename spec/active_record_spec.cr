@@ -48,10 +48,22 @@ module ActiveRecord
     end
   end
 
+  class PostsAuthorIdIs < NullAdapter::Query
+    def call(params, fields)
+      return false unless fields.has_key?("author_id") &&
+                          params.has_key?("1")
+      actual = fields["author_id"].as(Int)
+      expected = params["1"].as(Int32)
+      actual == expected
+    end
+  end
+
   NullAdapter.register_query("(number_of_dependents > :1) AND (number_of_dependents < :2)",
     LessAndMoreDependents.new)
 
   NullAdapter.register_query("number_of_dependents IN (:1, :2)", DependentsIn.new)
+
+  NullAdapter.register_query("posts.author_id = :1", PostsAuthorIdIs.new)
 end
 
 class Example; end
@@ -65,6 +77,8 @@ class Person < ActiveRecord::Model
   field first_name : String
   field number_of_dependents : Int
   field special_tax_group : Bool
+
+  has_many Post, criteria("posts.author_id") == criteria("people.id")
 
   def get_tax_exemption
     return 0.0 if number_of_dependents < 2
@@ -94,6 +108,7 @@ class Post < ActiveRecord::Model
   field title : String
   field content : String
   field created_at : Time
+  field author_id : Int
 
   field_level :protected
 
@@ -376,6 +391,46 @@ module ActiveRecord
       it "equals to plural form by default" do
         ExampleModel.create({"name" => "hello world"})
         FakeAdapter.instance.table_name.should eq("example_models")
+      end
+    end
+
+    describe "directive has_many" do
+      it "allows to join people with posts" do
+        # ARRANGE
+        person = new_person.create
+        first_post = Post.create({
+          "title" => "My first post",
+          "content" => "Content",
+          "author_id" => person.id
+        })
+        second_post = Post.create({
+          "title" => "My second post",
+          "content" => "Content",
+          "author_id" => person.id
+        })
+
+        other_person = new_other_person.create
+        other_post = Post.create({
+          "title" => "Other post",
+          "content" => "Content",
+          "author_id" => other_person.id
+        })
+
+        # ACT
+        people_joined_posts = Person.join(Post).all
+        actual = people_joined_posts.first.posts.map &.id
+
+        # ASSERT
+        expected = [first_post, second_post].map &.id
+        actual.should eq(expected)
+      end
+
+      pending "does only one query (an actual join)" do
+
+      end
+
+      pending "also allows to apply where after the join" do
+
       end
     end
   end

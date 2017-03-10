@@ -1,5 +1,6 @@
 require "./criteria_helper"
 require "./support"
+require "./directives/*"
 
 require "pool/connection"
 
@@ -14,6 +15,9 @@ module ActiveRecord
   class Model
     include CriteriaHelper
     extend CriteriaHelper
+
+    include Directives::HasMany
+    extend Directives::Join
 
     MACRO_CURRENT = [] of String
 
@@ -126,7 +130,7 @@ module ActiveRecord
       @@adapter_name
     end
 
-    private def self.table_name_value
+    def self.table_name_value
       (@@table_name ||= Support.plural(name)).not_nil!
     end
 
