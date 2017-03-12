@@ -243,26 +243,25 @@ end
 
 *This is still not implemented.*
 
+Joins in this library are a bit different from what you could see in other popular frameworks. Instead of adding more functionality and complexity to existing models, this library adopts the concept of "join" being another model. Kind of like a view of the database. Let's take a look at the example:
+
 ```crystal
 class User < ActiveRecord::Model
-  has_many Post, criteria("posts.author_id") == criteria("users.id")
   # ...
 end
 
 class Post < ActiveRecord::Model
-  belongs_to User, criteria("posts.author_id") == criteria("users.id")
   # ...
 end
 
-# makes only one join query
-posts = Post.join(User).all
-posts.first.title      # => "Hello world post"
-posts.first.user.name  # => "John Smith"
+class UserWithPosts < ActiveRecord::Join
+  one User, id
+  many Post, author_id
+end
 
-# makes 2 queries - 'select from users' and 'select from posts'
-user = User.all.first
-user.posts.first.title  # => "Hello world post"
-user.posts[1].title     # => "Yet another post"
+user_with_posts = UserWithPosts.all.first
+user_with_posts.user.first_name  # => "John Smith"
+user_with_posts.posts            # => [Post<...>, Post<...>, ...]
 ```
 
 ## Known database adapters
