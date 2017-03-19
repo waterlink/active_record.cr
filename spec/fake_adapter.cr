@@ -45,6 +45,7 @@ class FakeAdapter < ActiveRecord::Adapter
   delegate adapter, where(query, params)
   delegate adapter, update(id, fields)
   delegate adapter, delete(id)
+  delegate adapter, with_joins(joins)
 end
 
 ActiveRecord::Registry.register_adapter("fake", FakeAdapter)

@@ -111,10 +111,55 @@ module ActiveRecord
       deleted << (primary_key.as(Int32)) - 1
     end
 
+    def with_joins(joins)
+      NullJoinsAdapter.new(@table_name, @primary_field, @fields, joins)
+    end
+
     def _reset
       initialize(@table_name, @primary_field, @fields, false)
     end
   end
 
   Registry.register_adapter("null", NullAdapter)
+
+  class NullJoinsAdapter < ActiveRecord::Adapter
+    def initialize(
+      @table_name : String,
+      @primary_field : String,
+      @fields : Array(String),
+      @joins : Hash(String, ::Query::Query))
+    end
+
+    def create(fields)
+      raise "join adapter does not support creation"
+    end
+
+    def get(id)
+      raise "TODO"
+    end
+
+    def all
+      raise "TODO"
+    end
+
+    def where(query_hash : Hash(K, V)) forall K, V
+      raise "TODO"
+    end
+
+    def where(query : ::Query::Query)
+      raise "TODO"
+    end
+
+    def update(id, fields)
+      raise "join adapter does not support updating"
+    end
+
+    def delete(id)
+      raise "join adapter does not support deletion"
+    end
+
+    def with_joins(joins)
+      raise "deep joins are not supported (yet?)"
+    end
+  end
 end

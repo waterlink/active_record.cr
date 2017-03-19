@@ -264,6 +264,27 @@ user_with_posts.user.first_name  # => "John Smith"
 user_with_posts.posts            # => [Post<...>, Post<...>, ...]
 ```
 
+#### How do joins work?
+
+`UserWithPosts` is a model, very similar to the simple model, such as `User`. It has its own database adapter object, that is having an additional field: `joins`. In that case it will be something like:
+
+```crystal
+joins = [
+  {
+    "posts" => criteria("users.id") == criteria("posts.id")
+  }
+]
+```
+
+It is a responsibility of the database adapter to apply the join correctly to the query. The base database adapter, in this example User's adapter, has to implement an instance method `with_joins(joins)` which returns a read-only version of the adapter (allowing only where, all and find) that will do the join. One-to-many joined query from the database adapter should return a record in a format:
+
+```crystal
+record = {
+  "users" => { .. fields .. },
+  "posts" => [{ .. fields .. }, { .. fields .. }, ..]
+}
+```
+
 ## Known database adapters
 
 - [mysql_adapter.cr](https://github.com/waterlink/mysql_adapter.cr) [![Build Status](https://travis-ci.org/waterlink/mysql_adapter.cr.svg?branch=master)](https://travis-ci.org/waterlink/mysql_adapter.cr)

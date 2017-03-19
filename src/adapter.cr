@@ -31,5 +31,7 @@ module ActiveRecord
     abstract def where(query : ::Query::Query)
     abstract def update(id, fields)
     abstract def delete(id)
+
+    abstract def with_joins(joins)
   end
 end

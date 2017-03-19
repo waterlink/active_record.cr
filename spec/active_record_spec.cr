@@ -94,6 +94,7 @@ class Post < ActiveRecord::Model
   field title : String
   field content : String
   field created_at : Time
+  field author_id : Int
 
   field_level :protected
 
@@ -380,3 +381,5 @@ module ActiveRecord
     end
   end
 end
+
+require "./joins_spec"

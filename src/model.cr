@@ -126,7 +126,7 @@ module ActiveRecord
       @@adapter_name
     end
 
-    private def self.table_name_value
+    def self.table_name_value
       (@@table_name ||= Support.plural(name)).not_nil!
     end
 
