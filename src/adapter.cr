@@ -32,6 +32,6 @@ module ActiveRecord
     abstract def update(id, fields)
     abstract def delete(id)
 
-    abstract def with_joins(joins)
+    abstract def with_joins(joins, foreign_adapter)
   end
 end

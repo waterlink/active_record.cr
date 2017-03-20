@@ -3,7 +3,8 @@ require "./spec_helper"
 module ActiveRecord
   class MoreDependents < NullAdapter::Query
     def call(params, fields)
-      return false unless fields.has_key?("number_of_dependents") &&
+      return false unless fields &&
+                          fields.has_key?("number_of_dependents") &&
                           params.has_key?("1")
       actual = fields["number_of_dependents"].as(Int)
       expected = params["1"].as(Int)
@@ -15,7 +16,8 @@ module ActiveRecord
 
   class LessDependents < NullAdapter::Query
     def call(params, fields)
-      return false unless fields.has_key?("number_of_dependents") &&
+      return false unless fields &&
+                          fields.has_key?("number_of_dependents") &&
                           params.has_key?("1")
       actual = fields["number_of_dependents"].as(Int)
       expected = params["1"].as(Int)
@@ -27,7 +29,8 @@ module ActiveRecord
 
   class LessAndMoreDependents < NullAdapter::Query
     def call(params, fields)
-      return false unless fields.has_key?("number_of_dependents") &&
+      return false unless fields &&
+                          fields.has_key?("number_of_dependents") &&
                           params.has_key?("1") && params.has_key?("2")
       actual = fields["number_of_dependents"].as(Int)
       low = params["1"].as(Int)
@@ -38,7 +41,8 @@ module ActiveRecord
 
   class DependentsIn < NullAdapter::Query
     def call(params, fields)
-      return false unless fields.has_key?("number_of_dependents") &&
+      return false unless fields &&
+                          fields.has_key?("number_of_dependents") &&
                           params.has_key?("1") && params.has_key?("2")
       actual = fields["number_of_dependents"].as(Int)
       array = [] of Int32
