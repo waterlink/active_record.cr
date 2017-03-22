@@ -46,4 +46,50 @@ describe "joins" do
     actual.person.should eq(person)
     actual.posts.should eq([post])
   end
+
+  it "allows to get one person with two posts" do
+    # ARRANGE
+    person = new_person.create
+    post_a = Post.create({
+      "title" => "post a",
+      "content" => "hi",
+      "author_id" => person.id
+    })
+    post_b = Post.create({
+      "title" => "post b",
+      "content" => "hi",
+      "author_id" => person.id
+    })
+
+    # ACT
+    actual = PersonWithPosts.get(person.id)
+
+    # ASSERT
+    actual.person.should eq(person)
+    actual.posts.should eq([post_a, post_b])
+  end
+
+  it "allows to get one person with one posts and without posts of other" do
+    # ARRANGE
+    person = new_person.create
+    post_a = Post.create({
+      "title" => "post a",
+      "content" => "hi",
+      "author_id" => person.id
+    })
+
+    other = new_person.create
+    post_b = Post.create({
+      "title" => "post b",
+      "content" => "hi",
+      "author_id" => other.id
+    })
+
+    # ACT
+    actual = PersonWithPosts.get(person.id)
+
+    # ASSERT
+    actual.person.should eq(person)
+    actual.posts.should eq([post_a])
+  end
 end
