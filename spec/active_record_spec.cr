@@ -120,6 +120,7 @@ class ExampleModel < ActiveRecord::Model
 
   primary id : Int
   field name : String
+  field person_id : Int
 end
 
 class AnotherExampleModel < ActiveRecord::Model

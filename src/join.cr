@@ -29,6 +29,19 @@ module ActiveRecord
           end
         end
       end
+
+      macro one(foreign_model, foreign)
+        extend OneToOne(B, {{foreign_model.id}})
+        @@foreign = "#{ {{foreign_model}}.table_name_value }.{{foreign.id}}"
+
+        getter {{foreign_model.stringify.underscore.id}}
+        @{{foreign_model.stringify.underscore.id}} = [] of {{foreign_model.id}}
+
+        def initialize(base_record, foreign_record)
+          initialize(base_record)
+          @{{foreign_model.stringify.underscore.id}} = foreign_record
+        end
+      end
     end
 
     module OneToMany(B, F)
@@ -42,14 +55,38 @@ module ActiveRecord
         end
       end
 
-      def build(record)
-        new(record.base_record, record.foreign_records)
+      def build(record : Record(Hash(String, SupportedType)?, Array(Hash(String, SupportedType))))
+        new(record.base_record, record.foreign)
+      end
+
+      def build(record : Record(Hash(String, SupportedType)?, Hash(String, SupportedType)))
+        raise "unexpected one-to-one record response from adapter (expected one-to-many)"
+      end
+    end
+
+    module OneToOne(B, F)
+      def connection
+        B.pool.connection do |adapter|
+          F.pool.connection do |foreign_adapter|
+            yield adapter.with_joins({
+              F.table_name_value => (criteria(@@primary) == criteria(@@foreign))
+            }, foreign_adapter)
+          end
+        end
+      end
+
+      def build(record : Record(Hash(String, SupportedType)?, Array(Hash(String, SupportedType))))
+        raise "unexpected one-to-many record response from adapter (expected one-to-one)"
+      end
+
+      def build(record : Record(Hash(String, SupportedType)?, Hash(String, SupportedType)))
+        new(record.base_record, record.foreign)
       end
     end
 
     class Record(B, F)
-      getter base_record, foreign_records
-      def initialize(@base_record : B, @foreign_records : F)
+      getter base_record, foreign
+      def initialize(@base_record : B, @foreign : F)
       end
     end
 

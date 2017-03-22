@@ -18,7 +18,12 @@ class PersonWithPosts < ActiveRecord::Join
   many Post, author_id
 end
 
-describe "joins" do
+class PersonWithExample < ActiveRecord::Join
+  one Person, id
+  one ExampleModel, person_id
+end
+
+describe "joins - one to many" do
   it "allows to get one person with no posts" do
     # ARRANGE
     person = new_person.create
@@ -30,7 +35,7 @@ describe "joins" do
     actual.person.should eq(person)
   end
 
-  it "allows to get one person with one posts" do
+  it "allows to get one person with one post" do
     # ARRANGE
     person = new_person.create
     post = Post.create({
@@ -69,7 +74,83 @@ describe "joins" do
     actual.posts.should eq([post_a, post_b])
   end
 
-  it "allows to get one person with one posts and without posts of other" do
+  it "allows to get one person with one post and without posts of other" do
+    # ARRANGE
+    person = new_person.create
+    post_a = Post.create({
+      "title" => "post a",
+      "content" => "hi",
+      "author_id" => person.id
+    })
+
+    other = new_person.create
+    post_b = Post.create({
+      "title" => "post b",
+      "content" => "hi",
+      "author_id" => other.id
+    })
+
+    # ACT
+    actual = PersonWithPosts.get(person.id)
+
+    # ASSERT
+    actual.person.should eq(person)
+    actual.posts.should eq([post_a])
+  end
+end
+
+describe "joins - one to one" do
+  it "allows to get one person with the example model" do
+    # ARRANGE
+    person = new_person.create
+
+    # ACT
+    actual = PersonWithExample.get(person.id)
+
+    # ASSERT
+    actual.person.should eq(person)
+  end
+
+  pending "allows to get one person with one post" do
+    # ARRANGE
+    person = new_person.create
+    post = Post.create({
+      "title" => "hello",
+      "content" => "world",
+      "author_id" => person.id
+    })
+
+    # ACT
+    actual = PersonWithPosts.get(person.id)
+
+    # ASSERT
+    actual.person.should eq(person)
+    actual.posts.should eq([post])
+  end
+
+  pending "allows to get one person with two posts" do
+    # ARRANGE
+    person = new_person.create
+    post_a = Post.create({
+      "title" => "post a",
+      "content" => "hi",
+      "author_id" => person.id
+    })
+    post_b = Post.create({
+      "title" => "post b",
+      "content" => "hi",
+      "author_id" => person.id
+    })
+
+    # ACT
+    actual = PersonWithPosts.get(person.id)
+
+    # ASSERT
+    actual.person.should eq(person)
+    actual.posts.should eq([post_a, post_b])
+  end
+
+  pending "allows to get one person with one post and without posts of other" do
     # ARRANGE
     person = new_person.create
     post_a = Post.create({
