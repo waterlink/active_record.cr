@@ -34,4 +34,11 @@ module ActiveRecord
 
     abstract def with_joins(joins, foreign_adapter)
   end
+
+  abstract class JoinAdapter
+    abstract def get(id)
+    abstract def all
+    abstract def where(query_hash : Hash(K, V)) forall K, V
+    abstract def where(query : ::Query::Query)
+  end
 end

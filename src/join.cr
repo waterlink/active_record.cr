@@ -34,14 +34,22 @@ module ActiveRecord
     module OneToMany(B, F)
       def connection
         B.pool.connection do |adapter|
-          yield adapter.with_joins({
-            F.table_name_value => (criteria(@@primary) == criteria(@@foreign))
-          })
+          F.pool.connection do |foreign_adapter|
+            yield adapter.with_joins({
+              F.table_name_value => (criteria(@@primary) == criteria(@@foreign))
+            }, foreign_adapter)
+          end
         end
       end
 
       def build(record)
-        new(record[B.table_name_value], record[F.table_name_value])
+        new(record.base_record, record.foreign_records)
+      end
+    end
+
+    class Record(B, F)
+      getter base_record, foreign_records
+      def initialize(@base_record : B, @foreign_records : F)
       end
     end
 

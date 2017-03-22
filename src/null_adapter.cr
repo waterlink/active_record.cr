@@ -5,11 +5,10 @@ module ActiveRecord
   class NullAdapter < ActiveRecord::Adapter
     abstract class Query
       abstract def call(params, fields)
+    end
 
-      # default impl
-      def call(params, fields, foreign_fields)
-        call(params, fields)
-      end
+    abstract class JoinQuery
+      abstract def call(base_record, foreign_record)
     end
 
     query_generator Sql::QueryGenerator.new
@@ -40,6 +39,22 @@ module ActiveRecord
 
     private def self.registered_queries
       @@registered_queries ||= {} of String => Query
+    end
+
+    def self.register_join_query(query, handler)
+      registered_join_queries[query] = handler
+    end
+
+    def self.registered_join_query(query)
+      registered_join_queries.fetch(query) do
+        raise ArgumentError.new(
+          "Unregistered join query for NullAdapter: #{query.inspect}, use NullAdapter.register_join_query"
+        )
+      end
+    end
+
+    private def self.registered_join_queries
+      @@registered_join_queries ||= {} of String => JoinQuery
     end
 
     def self.build(table_name, primary_field, fields, register = true)
@@ -117,7 +132,7 @@ module ActiveRecord
       deleted << (primary_key.as(Int32)) - 1
     end
 
-    def with_joins(joins, foreign_model)
+    def with_joins(joins, foreign_adapter)
       NullJoinsAdapter.new(@table_name, @primary_field, @fields, joins, self, foreign_adapter)
     end
 
@@ -128,8 +143,8 @@ module ActiveRecord
 
   Registry.register_adapter("null", NullAdapter)
 
-  class NullJoinsAdapter < ActiveRecord::Adapter
-    @join_query : String
+  class NullJoinsAdapter < ActiveRecord::JoinAdapter
+    @join_query : QueryGenerator::QueryProtocol
     @foreign_table : String
 
     def initialize(
@@ -141,13 +156,8 @@ module ActiveRecord
       @foreign_adapter : Adapter)
 
       @foreign_table = @joins.keys.first
-      join_query = @joins[foreign_table]
-      generated_query = NullAdapter.generate_query(join_query).not_nil!
-      @join_query = generated_query + " [join #{foreign_table}]"
-    end
-
-    def create(fields)
-      raise "join adapter does not support creation"
+      join_query = @joins[@foreign_table]
+      @join_query = NullAdapter.generate_query(join_query).not_nil!
     end
 
     def get(id)
@@ -159,19 +169,15 @@ module ActiveRecord
       all_foreign_records.each_index do |index|
         record = all_foreign_records[index]
         matches = NullAdapter
-          .registered_query(@join_query)
-          .call({} of String => Fields, base_record, record)
+          .registered_join_query(@join_query.query)
+          .call(base_record, record)
 
         if matches
           foreign_records << record
         end
       end
 
-      // FIXME: this can not be instantiated because type is to recursive
-      {
-        @table_name => base_record,
-        @foreign_table => foreign_records
-      }
+      Join::Record.new(base_record, foreign_records)
     end
 
     def all
@@ -184,18 +190,6 @@ module ActiveRecord
 
     def where(query : ::Query::Query)
       raise "TODO: where(query)"
-    end
-
-    def update(id, fields)
-      raise "join adapter does not support updating"
-    end
-
-    def delete(id)
-      raise "join adapter does not support deletion"
-    end
-
-    def with_joins(joins, foreign_adapter)
-      raise "deep joins are not supported (yet?)"
     end
   end
 end
