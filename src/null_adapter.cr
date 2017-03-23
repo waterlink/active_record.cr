@@ -132,8 +132,8 @@ module ActiveRecord
       deleted << (primary_key.as(Int32)) - 1
     end
 
-    def with_joins(joins, foreign_adapter)
-      NullJoinsAdapter.new(@table_name, @primary_field, @fields, joins, self, foreign_adapter)
+    def with_joins(join_model, joins, foreign_adapter)
+      NullJoinsAdapter.new(@table_name, @primary_field, @fields, join_model, joins, self, foreign_adapter)
     end
 
     def _reset
@@ -151,6 +151,7 @@ module ActiveRecord
       @table_name : String,
       @primary_field : String,
       @fields : Array(String),
+      @join_kind : String,
       @joins : Hash(String, ::Query::Query),
       @base_adapter : Adapter,
       @foreign_adapter : Adapter)
@@ -172,12 +173,18 @@ module ActiveRecord
           .registered_join_query(@join_query.query)
           .call(base_record, record)
 
-        if matches
+        if matches && @join_kind == "one-to-many"
           foreign_records << record
+        elsif matches && @join_kind == "one-to-one"
+          return Join::Record.new(base_record, record)
         end
       end
 
-      Join::Record.new(base_record, foreign_records)
+      if @join_kind == "one-to-many"
+        Join::Record.new(base_record, foreign_records)
+      else
+        return nil
+      end
     end
 
     def all

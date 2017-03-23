@@ -34,25 +34,31 @@ module ActiveRecord
         extend OneToOne(B, {{foreign_model.id}})
         @@foreign = "#{ {{foreign_model}}.table_name_value }.{{foreign.id}}"
 
-        getter {{foreign_model.stringify.underscore.id}}
-        @{{foreign_model.stringify.underscore.id}} = [] of {{foreign_model.id}}
+        getter! {{foreign_model.stringify.underscore.id}}
+        @{{foreign_model.stringify.underscore.id}} : {{foreign_model.id}}?
 
         def initialize(base_record, foreign_record)
           initialize(base_record)
-          @{{foreign_model.stringify.underscore.id}} = foreign_record
+          @{{foreign_model.stringify.underscore.id}} = {{foreign_model.id}}.build(foreign_record)
         end
       end
     end
 
     module OneToMany(B, F)
+      JOIN_KIND = "one-to-many"
+
       def connection
         B.pool.connection do |adapter|
           F.pool.connection do |foreign_adapter|
-            yield adapter.with_joins({
+            yield adapter.with_joins(JOIN_KIND, {
               F.table_name_value => (criteria(@@primary) == criteria(@@foreign))
             }, foreign_adapter)
           end
         end
+      end
+
+      def build(record : Nil)
+        raise RecordNotFoundException.new("Record not found with given id.")
       end
 
       def build(record : Record(Hash(String, SupportedType)?, Array(Hash(String, SupportedType))))
@@ -65,14 +71,20 @@ module ActiveRecord
     end
 
     module OneToOne(B, F)
+      JOIN_KIND = "one-to-one"
+
       def connection
         B.pool.connection do |adapter|
           F.pool.connection do |foreign_adapter|
-            yield adapter.with_joins({
+            yield adapter.with_joins(JOIN_KIND, {
               F.table_name_value => (criteria(@@primary) == criteria(@@foreign))
             }, foreign_adapter)
           end
         end
+      end
+
+      def build(record : Nil)
+        raise RecordNotFoundException.new("Record not found with given id.")
       end
 
       def build(record : Record(Hash(String, SupportedType)?, Array(Hash(String, SupportedType))))

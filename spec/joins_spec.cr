@@ -100,15 +100,14 @@ describe "joins - one to many" do
 end
 
 describe "joins - one to one" do
-  it "allows to get one person with the example model" do
+  it "fails with RecordNotFoundException when foreign record is not present" do
     # ARRANGE
     person = new_person.create
 
-    # ACT
-    actual = PersonWithExample.get(person.id)
-
-    # ASSERT
-    actual.person.should eq(person)
+    # ACT & ASSERT
+    expect_raises ActiveRecord::RecordNotFoundException do
+      actual = PersonWithExample.get(person.id)
+    end
   end
 
   pending "allows to get one person with one post" do

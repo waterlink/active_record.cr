@@ -156,8 +156,9 @@ module ActiveRecord
 
     def self.get(primary_key)
       pool.connection do |adapter|
-        if adapter.get(primary_key)
-          build(adapter.get(primary_key)).as(self)
+        fields = adapter.get(primary_key)
+        if fields
+          build(fields).as(self)
         else
           raise RecordNotFoundException.new("Record not found with given id.")
         end
